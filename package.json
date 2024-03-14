@@ -1,5 +1,6 @@
 {
-  "name": "nuxt-app",
+  "name": "nuxt3-quasar-app",
+  "description": "Nuxt 3 + Quasar + Firebase 학습 리포지토리",
   "private": true,
   "type": "module",
   "scripts": {
