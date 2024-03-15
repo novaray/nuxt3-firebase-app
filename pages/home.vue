@@ -1,17 +1,18 @@
 <script setup lang="ts">
-const goPostDetails = async (id: number) => {
-  await navigateTo(`/posts/${id}`);
-};
+import { definePageMeta } from '#imports';
+
+definePageMeta({
+  width: '600px'
+});
 </script>
 
 <template>
   <q-page padding>
-    <div class="text-h4">커뮤니티 목록</div>
+    <div class="text-h4">Home</div>
     <section class="q-gutter-y-sm q-mt-lg">
       <q-card
         v-for="id in 100"
         :key="id"
-        @click="goPostDetails(id)"
       >
         <q-card-section>{{ id }}번 게시글</q-card-section>
       </q-card>
