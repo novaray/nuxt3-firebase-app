@@ -1,6 +1,8 @@
 <script setup lang="ts">
-const route = useRoute();
+const authDialog = ref(true);
+const openAuthDialog = () => (authDialog.value = true);
 
+const route = useRoute();
 const pageContainerStyles = computed(() => ({
   maxWidth: route.meta?.width || '1080px',
   margin: '0 auto'
@@ -89,6 +91,7 @@ const moveExternalLink = async (url: string) => {
           rounded
           color="primary"
           label="로그인 / 회원가입"
+          @click="openAuthDialog"
         />
       </q-toolbar>
     </q-header>
@@ -96,5 +99,6 @@ const moveExternalLink = async (url: string) => {
     <q-page-container :style="pageContainerStyles">
       <router-view />
     </q-page-container>
+    <AuthDialog v-model="authDialog" />
   </q-layout>
 </template>
