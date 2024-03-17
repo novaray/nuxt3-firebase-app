@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const authDialog = ref(true);
+const authDialog = ref(false);
 const openAuthDialog = () => (authDialog.value = true);
 
 const route = useRoute();
