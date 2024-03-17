@@ -2,5 +2,9 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['nuxt-quasar-ui', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
-  quasar: {}
+  quasar: {
+    extras: {
+      fontIcons: ['material-symbols-outlined']
+    }
+  }
 });

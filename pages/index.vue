@@ -1,21 +1,33 @@
 <script setup lang="ts">
-const goPostDetails = async (id: number) => {
-  await navigateTo(`/posts/${id}`);
-};
+// const goPostDetails = async (id: number) => {
+//   await navigateTo(`/posts/${id}`);
+// };
+
+const posts = Array.from({ length: 20 }, (_, index) => ({
+  id: index,
+  title: `Vue3 Firebase 강의 ${index}`,
+  content:
+    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquam, animi at delectus distinctio eligendi eos exercitationem, harum illo itaque laborum minima nemo officiis reiciendis sit suscipit tenetur voluptates, voluptatum.',
+  readCount: 1,
+  commentCount: 2,
+  likeCount: 3,
+  bookmarkCount: 4,
+  tags: ['html', 'css', 'javascript'],
+  uid: 'uid',
+  category: `카테고리 ${index}`
+}));
 </script>
 
 <template>
   <q-page padding>
-    <div class="text-h4">커뮤니티 목록</div>
-    <section class="q-gutter-y-sm q-mt-lg">
-      <q-card
-        v-for="id in 100"
-        :key="id"
-        @click="goPostDetails(id)"
-      >
-        <q-card-section>{{ id }}번 게시글</q-card-section>
-      </q-card>
-    </section>
+    <div class="row q-gutter-x-lg">
+      <AppsPostLeftBar class="col-grow" />
+      <section class="col-7">
+        <AppsPostHeader />
+        <AppsPostList :items="posts" />
+      </section>
+      <AppsPostRightBar class="col-3" />
+    </div>
   </q-page>
 </template>
 
