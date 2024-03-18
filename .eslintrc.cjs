@@ -42,6 +42,7 @@ module.exports = {
                 "max": 1
             }
         }],
+        "vue/no-multiple-template-root": 0,
         'prettier/prettier': [
             'error',
             {
