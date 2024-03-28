@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <q-card class="q-pa-lg">
+  <AppsBaseCard class="q-pa-lg">
     <div class="flex q-mb-md">
       <q-btn
         icon="sym_o_arrow_back"
@@ -97,7 +97,7 @@
       lorem ipsum dolor sit amet <br />
       lorem ipsum dolor sit amet <br />
     </div>
-  </q-card>
+  </AppsBaseCard>
 </template>
 
 <style scoped lang="scss"></style>
