@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Props {
   name: string;
-  label?: string;
+  label?: string | number;
   tooltip?: string;
 }
 

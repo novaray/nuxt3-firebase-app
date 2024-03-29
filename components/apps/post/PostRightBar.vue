@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import StickySideBar from '~/components/StickySideBar.vue';
 
+interface Emits {
+  (event: 'openWriteDialog'): void;
+}
+defineEmits<Emits>();
+
 const tags = ref([
   { name: 'vuejs', count: 10 },
   { name: 'react', count: 8 },
@@ -18,6 +23,7 @@ const tags = ref([
       color="primary"
       text-color="white"
       class="full-width"
+      @click="$emit('openWriteDialog')"
     >
       <q-avatar
         class="q-mr-sm"
