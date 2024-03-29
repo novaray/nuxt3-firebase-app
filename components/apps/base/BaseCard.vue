@@ -16,7 +16,6 @@ withDefaults(defineProps<Props>(), {
     v-bind="$attrs"
   >
     <template v-for="(_, name) in $slots">
-      {{ name }}
       <slot :name="name"></slot>
     </template>
   </q-card>
