@@ -51,6 +51,7 @@
             <q-item
               v-close-popup
               clickable
+              :to="`/posts/${$route.params.id}/edit`"
             >
               <q-item-section>수정하기</q-item-section>
             </q-item>
