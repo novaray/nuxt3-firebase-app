@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { Auth } from '@/service/auth';
+
 const authDialog = ref(false);
 const openAuthDialog = () => (authDialog.value = true);
+
+const authStore = useAuthStore();
 
 const route = useRoute();
 const pageContainerStyles = computed(() => ({
@@ -15,6 +19,10 @@ const moveExternalLink = async (url: string) => {
       target: '_blank'
     }
   });
+};
+
+const onClickLogout = () => {
+  Auth.logout();
 };
 </script>
 
@@ -87,6 +95,7 @@ const moveExternalLink = async (url: string) => {
           vertical
         />
         <q-btn
+          v-if="!authStore.isAuthenticated"
           unelevated
           rounded
           color="primary"
@@ -94,11 +103,12 @@ const moveExternalLink = async (url: string) => {
           @click="openAuthDialog"
         />
         <q-btn
+          v-if="authStore.isAuthenticated"
           round
           flat
         >
           <q-avatar>
-            <img src="https://cdn.quasar.dev/img/avatar.png" />
+            <img :src="authStore.user!.photoURL" />
           </q-avatar>
           <q-menu>
             <q-list style="min-width: 100px">
@@ -112,6 +122,7 @@ const moveExternalLink = async (url: string) => {
               <q-item
                 v-close-popup
                 clickable
+                @click="onClickLogout"
               >
                 <q-item-section>로그아웃</q-item-section>
               </q-item>

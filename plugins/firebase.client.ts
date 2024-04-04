@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
@@ -22,6 +22,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   nuxtApp.vueApp.provide('auth', auth);
   nuxtApp.provide('auth', auth);
+
+  const authStore = useAuthStore();
+  onAuthStateChanged(auth, (user) => {
+    console.log('### User: ', user);
+    authStore.setUser(user);
+  });
 
   // nuxtApp.vueApp.provide('firestore', firestore);
   // nuxtApp.provide('firestore', firestore);

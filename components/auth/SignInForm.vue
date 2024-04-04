@@ -1,5 +1,12 @@
 <script setup lang="ts">
+import { Auth } from '@/service/auth';
+
 defineEmits(['changeView']);
+
+const onClickSignInGoogle = () => {
+  console.log('onClickSignInGoogle');
+  Auth.signInWithGoogle();
+};
 </script>
 
 <template>
@@ -49,6 +56,7 @@ defineEmits(['changeView']);
         unelevated
         color="primary"
         outline
+        @click="onClickSignInGoogle"
       />
     </q-form>
   </div>
