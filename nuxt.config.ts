@@ -3,6 +3,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['nuxt-quasar-ui', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
   quasar: {
+    plugins: ['Notify'],
+    config: {
+      notify: {
+        position: 'top'
+      }
+    },
     extras: {
       fontIcons: ['material-symbols-outlined']
     }

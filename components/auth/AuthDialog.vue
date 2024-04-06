@@ -5,10 +5,14 @@ const viewMode = ref('AuthSignInForm'); // 'AuthSignInForm' | 'AuthSignUpForm' |
 const changeViewMode = (mode: string) => (viewMode.value = mode);
 
 // Nuxt 폴더구조상 Auth prefix가 붙기에 AuthSignInForm, AuthSignUpForm, AuthFindPasswordForm으로 설정.
-const authViewComponents = {
+const authViewComponents: Record<string, object> = {
   AuthSignInForm: defineAsyncComponent(() => import('./SignInForm.vue')),
   AuthSignUpForm: defineAsyncComponent(() => import('./SignUpForm.vue')),
   AuthFindPasswordForm: defineAsyncComponent(() => import('./FindPasswordForm.vue'))
+};
+
+const onCloseDialog = () => {
+  modelValue.value = false;
 };
 </script>
 
@@ -49,6 +53,7 @@ const authViewComponents = {
         <component
           :is="authViewComponents[viewMode]"
           @change-view="changeViewMode"
+          @close-dialog="onCloseDialog"
         />
       </q-card-section>
     </q-card>

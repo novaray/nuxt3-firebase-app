@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Auth } from '@/service/auth';
+import { Auth } from '@/service';
 
 const authDialog = ref(false);
 const openAuthDialog = () => (authDialog.value = true);
@@ -11,6 +11,7 @@ const pageContainerStyles = computed(() => ({
   maxWidth: route.meta?.width || '1080px',
   margin: '0 auto'
 }));
+const avatar = computed(() => authStore.user?.photoURL ?? Auth.generateDefaultPhotoUrl(authStore.user?.uid ?? ''));
 
 const moveExternalLink = async (url: string) => {
   await navigateTo(url, {
@@ -108,7 +109,10 @@ const onClickLogout = () => {
           flat
         >
           <q-avatar>
-            <img :src="authStore.user!.photoURL" />
+            <img
+              :src="avatar"
+              alt="user avatar"
+            />
           </q-avatar>
           <q-menu>
             <q-list style="min-width: 100px">
