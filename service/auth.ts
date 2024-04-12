@@ -1,7 +1,9 @@
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  updatePassword,
   updateProfile
 } from '@firebase/auth';
 import { getAuth, signInWithPopup, signOut } from 'firebase/auth';
@@ -41,5 +43,18 @@ export class Auth {
     return signInWithEmailAndPassword(getAuth(), email, password).then(({ user }) => {
       return user;
     });
+  }
+
+  static sendPasswordReset(email: string) {
+    return sendPasswordResetEmail(getAuth(), email).then(() => 'success');
+  }
+
+  static updateUserPassword(newPassword: string) {
+    const user = getAuth().currentUser;
+    if (user == null) {
+      return Promise.reject(new Error('User is not signed in'));
+    }
+
+    return updatePassword(user, newPassword).then(() => 'success');
   }
 }
