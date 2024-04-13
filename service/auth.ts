@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updatePassword,
@@ -26,13 +27,15 @@ export class Auth {
   }
 
   static signUpWithEmail({ email, password, nickname }: SignUp) {
-    return createUserWithEmailAndPassword(getAuth(), email, password).then(({ user }) => {
-      console.log(`user: ${user}`);
-      return updateProfile(user, {
-        displayName: nickname,
-        photoURL: this.generateDefaultPhotoUrl(user.uid)
-      });
-    });
+    return createUserWithEmailAndPassword(getAuth(), email, password)
+      .then(({ user }) => {
+        console.log(`user: ${user}`);
+        return updateProfile(user, {
+          displayName: nickname,
+          photoURL: this.generateDefaultPhotoUrl(user.uid)
+        });
+      })
+      .then(this.sendVerificationEmail);
   }
 
   static generateDefaultPhotoUrl(uid: string) {
@@ -56,5 +59,14 @@ export class Auth {
     }
 
     return updatePassword(user, newPassword).then(() => 'success');
+  }
+
+  static sendVerificationEmail() {
+    const user = getAuth().currentUser;
+    if (user == null) {
+      return Promise.reject(new Error('User is not signed in'));
+    }
+
+    return sendEmailVerification(user);
   }
 }

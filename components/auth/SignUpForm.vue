@@ -21,6 +21,10 @@ const onSubmit = () => {
       type: 'positive',
       message: '가입을 환영합니다! 🎉'
     });
+    Notify.create({
+      type: 'positive',
+      message: '이메일에서 인증을 완료해주세요! 📧'
+    });
     emit('closeDialog');
   });
 };

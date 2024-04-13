@@ -23,7 +23,27 @@ const moveExternalLink = async (url: string) => {
 };
 
 const onClickLogout = () => {
-  Auth.logout();
+  Auth.logout().then(() => {
+    Notify.create({
+      type: 'positive',
+      message: '로그아웃 되었습니다.'
+    });
+  });
+};
+
+const onClickVerifyEmail = () => {
+  Auth.sendVerificationEmail()
+    .then(() => {
+      Notify.create({
+        message: '이메일을 확인해주세요!'
+      });
+    })
+    .catch((error) => {
+      Notify.create({
+        type: 'negative',
+        message: error.message
+      });
+    });
 };
 </script>
 
@@ -115,13 +135,26 @@ const onClickLogout = () => {
             />
           </q-avatar>
           <q-menu>
-            <q-list style="min-width: 100px">
+            <q-list style="min-width: 140px">
               <q-item
+                v-if="authStore.user?.emailVerified"
                 v-close-popup
                 clickable
                 to="/mypage/profile"
               >
                 <q-item-section>프로필</q-item-section>
+              </q-item>
+              <q-item
+                v-else
+                v-close-popup
+                clickable
+              >
+                <q-item-section
+                  class="text-red"
+                  @click="onClickVerifyEmail"
+                >
+                  이메일을 인증해주세요.
+                </q-item-section>
               </q-item>
               <q-item
                 v-close-popup

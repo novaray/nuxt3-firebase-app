@@ -26,7 +26,8 @@ export const useAuthStore = defineStore('auth', {
           uid: user.uid,
           photoURL: user.photoURL,
           displayName: user.displayName,
-          email: user.email
+          email: user.email,
+          emailVerified: user.emailVerified
         };
         return;
       }
