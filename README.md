@@ -25,3 +25,19 @@ npm i -D eslint prettier eslint-config-prettier eslint-plugin-prettier eslint-pl
 npm install quasar @quasar/extras
 npm install --save-dev nuxt-quasar-ui
 ```
+
+## vue-use 관련
+해당 강의는 Vue3 기반으로 강의를 진행하므로, store를 사용할 때 `vue-use`를 사용하였다.  
+근데, Nuxt3에서는 `pinia-plugin-persistedstate`를 사용해서 store의 상태를 유지시킬 수 있으므로,  
+`vue-use`를 사용하지 않고, `pinia-plugin-persistedstate`를 사용하였다.
+
+기록해두는 건 좋을 것 같아 스토어를 `localStorage`에 저장할 땐, `useLocalStorage`함수를 사용하였다.
+- https://vueuse.org/core/useLocalStorage/#uselocalstorage
+
+```typescript
+import { useLocalStorage, StorageSerializers } from '@vueuse/core';
+
+{
+  user: useLocalStorage('user', null, { serializer: StorageSerializers.object })
+}
+```
