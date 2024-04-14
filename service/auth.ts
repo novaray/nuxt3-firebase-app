@@ -4,6 +4,7 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  updateEmail,
   updatePassword,
   updateProfile
 } from '@firebase/auth';
@@ -68,5 +69,25 @@ export class Auth {
     }
 
     return sendEmailVerification(user);
+  }
+
+  static updateUserProfile(displayName: string) {
+    const user = getAuth().currentUser;
+    if (user == null) {
+      return Promise.reject(new Error('User is not signed in'));
+    }
+
+    return updateProfile(user, {
+      displayName
+    });
+  }
+
+  static updateUserEmail(email: string) {
+    const user = getAuth().currentUser;
+    if (user == null) {
+      return Promise.reject(new Error('User is not signed in'));
+    }
+
+    return updateEmail(user, email);
   }
 }
