@@ -41,3 +41,17 @@ import { useLocalStorage, StorageSerializers } from '@vueuse/core';
   user: useLocalStorage('user', null, { serializer: StorageSerializers.object })
 }
 ```
+
+## vue onErrorCaptured hook API
+Vue3에서 `onErrorCaptured` hook API를 이용해서 전역 Vue 에러를 핸들링할 수 있다.  
+Nuxt3에서는 `plugin`을 이용해서 전역 에러를 핸들링할 수 있다.
+- plugins/errorHandler.ts
+
+근데,  
+`async/await`구문을 사용해서 함수가 에러를 발생시킬 때 에러가 집계되지만,  
+`Promise`을 사용해서는 에러가 집계되지 않는다. `catch`절로 에러를 잡지 않더라도 말이다.
+
+`async/await`구문을 사용할 때 `try/catch`절로 감싸지 않았는데 에러가 집계되는 반면,  
+`catch`절로 감싸주지 않았으면 집계될 줄 알았는데 집계되지 않아서 신기했다.
+
+평소하던대로 `error`가 발생하면 `util`이나 `composable`로 에러를 핸들링하는 것이 좋을 것 같다.

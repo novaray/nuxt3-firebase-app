@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Notify } from 'quasar';
 import { Auth } from '@/service/auth';
 import type { SignIn } from '@/types/sign';
 
@@ -14,15 +13,27 @@ const form = ref<SignIn>({
   email: '',
   password: ''
 });
+const loading = ref(false);
+const error = ref<any>('');
 
 const onSubmitEmail = () => {
-  Auth.signInWithEmail(form.value).then(() => {
-    Notify.create({
-      type: 'positive',
-      message: '환영합니다!'
-    });
-    emit('closeDialog');
-  });
+  loading.value = true;
+  Auth.signInWithEmail(form.value)
+    .then(() => {
+      Notify.create({
+        type: 'positive',
+        message: '환영합니다!'
+      });
+      emit('closeDialog');
+    })
+    .catch((err) => {
+      error.value = err;
+      Notify.create({
+        type: 'negative',
+        message: ErrorMessages.getErrorMessage(err.code)
+      });
+    })
+    .finally(() => (loading.value = false));
 };
 
 // 구글 로그인
@@ -61,6 +72,7 @@ const onClickSignInGoogle = () => {
         dense
         hide-bottom-space
       />
+      <DisplayError :code="error?.code" />
       <div>
         <q-btn
           type="submit"
@@ -68,6 +80,7 @@ const onClickSignInGoogle = () => {
           class="full-width"
           unelevated
           color="primary"
+          :loading
         />
         <div class="flex justify-between">
           <q-btn

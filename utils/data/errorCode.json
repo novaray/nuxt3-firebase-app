@@ -1,0 +1,5 @@
+{
+  "auth/invalid-credential": "아이디 또는 비밀번호를 확인해주세요.",
+  "auth/missing-password": "비밀번호를 입력해주세요.",
+  "auth/wrong-password": "잘못된 비밀번호 입니다. 구글 계정으로 로그인을 해보시겠어요?"
+}
