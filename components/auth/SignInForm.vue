@@ -46,16 +46,20 @@ const onClickSignInGoogle = () => {
     >
       <q-input
         v-model="form.email"
+        :rules="[ValidationRules.validateRequired, ValidationRules.validateEmail]"
         placeholder="이메일"
         outlined
         dense
+        hide-bottom-space
       />
       <q-input
         v-model="form.password"
+        :rules="[ValidationRules.validateRequired]"
         type="password"
         placeholder="비밀번호"
         outlined
         dense
+        hide-bottom-space
       />
       <div>
         <q-btn

@@ -14,6 +14,7 @@ const form = ref<SignUp>({
   email: '',
   password: ''
 });
+const passwordConfirm = ref('');
 
 const onSubmit = () => {
   Auth.signUpWithEmail(form.value).then(() => {
@@ -39,22 +40,40 @@ const onSubmit = () => {
     >
       <q-input
         v-model="form.nickname"
+        :rules="[ValidationRules.validateRequired]"
         placeholder="닉네임"
         outlined
         dense
+        hide-bottom-space
       />
       <q-input
         v-model="form.email"
+        :rules="[ValidationRules.validateRequired, ValidationRules.validateEmail]"
         placeholder="이메일"
         outlined
         dense
+        hide-bottom-space
       />
       <q-input
         v-model="form.password"
+        :rules="[ValidationRules.validateRequired, ValidationRules.validatePassword]"
         type="password"
         placeholder="비밀번호(문자, 숫자조합 8자 이상)"
         outlined
         dense
+        hide-bottom-space
+      />
+      <q-input
+        v-model="passwordConfirm"
+        :rules="[
+          ValidationRules.validateRequired,
+          (value) => ValidationRules.validatePasswordConfirm(form.password, value)
+        ]"
+        type="password"
+        placeholder="비밀번호 확인"
+        outlined
+        dense
+        hide-bottom-space
       />
       <q-btn
         type="submit"
