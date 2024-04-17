@@ -13,28 +13,49 @@ const form = ref<SignIn>({
   email: '',
   password: ''
 });
-const loading = ref(false);
-const error = ref<any>('');
+// const loading = ref(false);
+// const error = ref<any>('');
 
-const onSubmitEmail = () => {
-  loading.value = true;
-  Auth.signInWithEmail(form.value)
-    .then(() => {
-      Notify.create({
-        type: 'positive',
-        message: '환영합니다!'
-      });
-      emit('closeDialog');
-    })
-    .catch((err) => {
-      error.value = err;
-      Notify.create({
-        type: 'negative',
-        message: ErrorMessages.getErrorMessage(err.code)
-      });
-    })
-    .finally(() => (loading.value = false));
+const { pending, error, execute, status } = useAsyncData('signIn', () => Auth.signInWithEmail(form.value), {
+  immediate: false
+});
+
+const onSubmitEmail = async () => {
+  await execute();
+  pending.value = true;
+  if (status.value === 'success') {
+    Notify.create({
+      type: 'positive',
+      message: '환영합니다!'
+    });
+    emit('closeDialog');
+  } else if (status.value === 'error') {
+    Notify.create({
+      type: 'negative',
+      message: ErrorMessages.getErrorMessage(error.value?.cause!.code)
+    });
+  }
 };
+
+// const onSubmitEmail = () => {
+// loading.value = true;
+// Auth.signInWithEmail(form.value)
+//   .then(() => {
+//     Notify.create({
+//       type: 'positive',
+//       message: '환영합니다!'
+//     });
+//     emit('closeDialog');
+//   })
+//   .catch((err) => {
+//     error.value = err;
+//     Notify.create({
+//       type: 'negative',
+//       message: ErrorMessages.getErrorMessage(err.code)
+//     });
+//   })
+//   .finally(() => (loading.value = false));
+// };
 
 // 구글 로그인
 const onClickSignInGoogle = () => {
@@ -72,7 +93,7 @@ const onClickSignInGoogle = () => {
         dense
         hide-bottom-space
       />
-      <DisplayError :code="error?.code" />
+      <DisplayError :code="error?.cause.code" />
       <div>
         <q-btn
           type="submit"
@@ -80,7 +101,7 @@ const onClickSignInGoogle = () => {
           class="full-width"
           unelevated
           color="primary"
-          :loading
+          :loading="!pending"
         />
         <div class="flex justify-between">
           <q-btn
