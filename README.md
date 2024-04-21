@@ -117,3 +117,13 @@ Nuxt3에서는 `plugin`을 이용해서 전역 에러를 핸들링할 수 있다
 `catch`절로 감싸주지 않았으면 집계될 줄 알았는데 집계되지 않아서 신기했다.
 
 평소하던대로 `error`가 발생하면 `util`이나 `composable`로 에러를 핸들링하는 것이 좋을 것 같다.
+
+## firestore
+`document`는 파이어베이스의 저장 단위이며, `collection`은 `document`의 묶음이다.  
+`document`는 가볍게 저장해야 하는 데이터.
+
+우리 프로젝트에선 다음과 같이 저장할 것이다.
+- `posts/{postID}/comments/{commentID}`
+- `likes/{userID_postID}`
+- `users/{userID}/bookmarks/{bookmarkID}`
+- `tags/{tagName}`
