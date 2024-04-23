@@ -127,3 +127,8 @@ Nuxt3에서는 `plugin`을 이용해서 전역 에러를 핸들링할 수 있다
 - `likes/{userID_postID}`
 - `users/{userID}/bookmarks/{bookmarkID}`
 - `tags/{tagName}`
+
+## addDoc vs setDoc
+`addDoc`는 `document`를 추가할 때 사용하며, `document`의 `id`는 자동으로 생성된다.  
+`setDoc`는 `document`를 추가할 때 사용하며, `document`의 `id`를 직접 지정할 수 있다(자동으로도 생성 가능).  
+또한, `setDoc`는 `document`가 이미 존재할 때, `document`를 업데이트할 때 사용한다(없으면 생성한다).

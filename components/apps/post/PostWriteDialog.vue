@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Post } from '@/service';
+
 const getInitialForm = () => ({
   title: '',
   category: '',
@@ -10,6 +12,26 @@ const form = ref(getInitialForm());
 
 const onHide = () => {
   form.value = getInitialForm();
+};
+
+const authStore = useAuthStore();
+const router = useRouter();
+const loading = ref(false);
+const onSubmit = () => {
+  Post.createPost({
+    ...form.value,
+    uid: authStore.uid
+  })
+    .then((postId) => {
+      console.log(`postId: ${postId}`);
+      router.push(`/posts/${postId}`);
+    })
+    .catch((error) => {
+      Notify.create({
+        type: 'negative',
+        message: ErrorMessages.getErrorMessage(error.code)
+      });
+    });
 };
 </script>
 
@@ -36,6 +58,8 @@ const onHide = () => {
         v-model:category="form.category"
         v-model:content="form.content"
         v-model:tags="form.tags"
+        :loading="loading"
+        @submit="onSubmit"
       />
     </q-card>
   </q-dialog>
