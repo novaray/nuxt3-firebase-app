@@ -2,6 +2,8 @@
 import StickySideBar from '~/components/StickySideBar.vue';
 import { getCategories } from '~/service/category';
 
+const modelValue = defineModel<string | null>({ required: true });
+
 const categories = getCategories();
 </script>
 
@@ -17,8 +19,9 @@ const categories = getCategories();
       >
         <q-item
           v-ripple
+          :active="modelValue === null"
           clickable
-          :active="true"
+          @click="modelValue = null"
         >
           <q-item-section>전체</q-item-section>
         </q-item>
@@ -26,7 +29,9 @@ const categories = getCategories();
           v-for="category in categories"
           :key="category.value"
           v-ripple
+          :active="modelValue === category.value"
           clickable
+          @click="modelValue = category.value"
         >
           <q-item-section>{{ category.label }}</q-item-section>
         </q-item>

@@ -33,22 +33,19 @@ import { ValidationRules } from '@/utils/validationRules';
 
 interface Props {
   loading: boolean;
+  tags: string[];
 }
-defineProps<Props>();
+const props = defineProps<Props>();
 
 interface Emits {
   (event: 'submit'): void;
+  (event: 'update:tags', title: string[]): void;
 }
 const emit = defineEmits<Emits>();
 
 const titleModel = defineModel<string>('title', { required: true });
 const categoryModel = defineModel<string>('category', { required: true });
 const contentModel = defineModel<string>('content', { required: true });
-const tagsModel = defineModel<string[]>('tags', { required: true });
-
-const removeTag = (index: number) => {
-  tagsModel.value.splice(index, 1);
-};
 
 const categories = getCategories();
 
@@ -63,26 +60,11 @@ const onSubmit = () => {
   emit('submit');
 };
 
-const tagField = ref('');
-const onRegisterTag = () => {
-  const tagValue = tagField.value.replace(/ /g, '');
-  if (!tagValue) {
-    return;
-  }
-
-  if (tagsModel.value.length >= 10) {
-    return Notify.create({
-      type: 'negative',
-      message: '태그는 10개까지만 등록할 수 있습니다.'
-    });
-  }
-
-  if (!tagsModel.value.includes(tagValue)) {
-    tagsModel.value.push(tagValue);
-  }
-
-  tagField.value = '';
-};
+const { tagField, addTag, removeTag } = useTag({
+  tags: toRef(props, 'tags'),
+  updateTags: (tags) => emit('update:tags', tags),
+  maxLengthMessage: '태그는 10개까지만 등록할 수 있습니다.'
+});
 </script>
 
 <template>
@@ -116,7 +98,7 @@ const onRegisterTag = () => {
         prefix="#"
         outlined
         placeholder="태그를 입력해주세요 (입력 후 Enter)."
-        @keydown.enter.prevent="onRegisterTag"
+        @keydown.enter.prevent="addTag"
       />
       <q-chip
         v-for="(tag, index) in tags"

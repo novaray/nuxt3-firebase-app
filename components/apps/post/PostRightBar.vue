@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import StickySideBar from '~/components/StickySideBar.vue';
+interface Props {
+  tags: string[];
+}
+const props = defineProps<Props>();
 
 interface Emits {
   (event: 'openWriteDialog'): void;
+  (event: 'update:tags', title: string[]): void;
 }
-defineEmits<Emits>();
+const emit = defineEmits<Emits>();
 
-const tags = ref([
-  { name: 'vuejs', count: 10 },
-  { name: 'react', count: 8 },
-  { name: 'angular', count: 7 },
-  { name: 'html', count: 1 },
-  { name: 'css', count: 3 }
-]);
+const { tagField, addTag, removeTag } = useTag({
+  tags: toRef(props, 'tags'),
+  updateTags: (tags) => emit('update:tags', tags),
+  maxLengthMessage: '태그는 10개까지만 등록할 수 있습니다.'
+});
 </script>
 
 <template>
@@ -63,34 +65,25 @@ const tags = ref([
           square
         >
           <q-input
+            v-model="tagField"
             borderless
             dense
             input-style="font-size: 12px"
             placeholder="태그로 검색해보세요"
+            @keydown.enter.prevent="addTag"
           />
           <div class="q-gutter-sm q-pb-sm">
             <q-btn
+              v-for="(tag, index) in tags"
+              :key="tag"
               size="10px"
               padding="2px 4px 2px 7px"
               color="grey-3"
               text-color="dark"
               unelevated
+              @click="removeTag(index)"
             >
-              vuejs
-              <q-icon
-                name="clear"
-                size="12px"
-                color="grey"
-              />
-            </q-btn>
-            <q-btn
-              size="10px"
-              padding="2px 4px 2px 7px"
-              color="grey-3"
-              text-color="dark"
-              unelevated
-            >
-              react
+              {{ tag }}
               <q-icon
                 name="clear"
                 size="12px"
@@ -103,18 +96,17 @@ const tags = ref([
 
       <q-list padding>
         <q-item
-          v-for="tag in tags"
-          :key="tag.name"
           v-ripple
           clickable
           dense
+          @click="addTag()"
         >
-          <q-item-section class="text-teal text-caption">#{{ tag.name }}</q-item-section>
+          <q-item-section class="text-teal text-caption">#vuejs</q-item-section>
           <q-item-section
             side
             class="text-teal text-caption"
           >
-            {{ tag.count }}
+            10
           </q-item-section>
         </q-item>
       </q-list>

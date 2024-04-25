@@ -3,8 +3,23 @@
 //   await navigateTo(`/posts/${id}`);
 // };
 import { Post } from '@/service';
+import type { PostData } from '~/types/post';
 
-const posts = ref<any[]>([]);
+const posts = ref<PostData[]>([]);
+const params = ref({
+  category: null,
+  tags: []
+});
+
+watch([() => params.value.category, () => params.value.tags], () => {
+  Post.getPosts(params.value)
+    .then((res) => {
+      posts.value = res;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+});
 
 const postDialog = ref(false);
 const openWriteDialog = () => {
@@ -12,7 +27,7 @@ const openWriteDialog = () => {
 };
 
 onMounted(() => {
-  Post.getPosts(undefined)
+  Post.getPosts(params.value)
     .then((res) => {
       console.log(res);
       posts.value = res;
@@ -26,12 +41,16 @@ onMounted(() => {
 <template>
   <q-page padding>
     <div class="row q-gutter-x-lg">
-      <AppsPostLeftBar class="col-grow" />
+      <AppsPostLeftBar
+        v-model="params.category"
+        class="col-grow"
+      />
       <section class="col-7">
         <AppsPostHeader />
         <AppsPostList :items="posts" />
       </section>
       <AppsPostRightBar
+        v-model:tags="params.tags"
         class="col-3"
         @open-write-dialog="openWriteDialog"
       />
