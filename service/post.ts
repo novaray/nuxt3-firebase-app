@@ -1,4 +1,4 @@
-import { addDoc, collection, getFirestore, serverTimestamp } from '@firebase/firestore';
+import { addDoc, collection, getDocs, getFirestore, serverTimestamp } from '@firebase/firestore';
 import type { CreatePostRequest } from '@/types/post';
 
 export class Post {
@@ -29,6 +29,18 @@ export class Post {
       createdAt: serverTimestamp()
     }).then((docRef) => {
       return docRef.id;
+    });
+  }
+
+  static getPosts(params: any) {
+    const db = getFirestore();
+
+    return getDocs(collection(db, 'posts')).then((querySnapshot) => {
+      return querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        createdAt: doc.data().createdAt?.toDate()
+      }));
     });
   }
 }

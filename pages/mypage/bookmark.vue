@@ -11,7 +11,7 @@ const posts = Array.from({ length: 3 }, (_, index) => ({
   tags: ['html', 'css', 'javascript'],
   uid: 'uid',
   category: `카테고리 ${index}`,
-  createTime: new Date()
+  createdAt: new Date()
 }));
 </script>
 

@@ -1,24 +1,15 @@
 <script setup lang="ts">
-interface Props {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  createTime: Date;
-  tags: string[];
-  uid: string;
-  readCount?: number;
-  commentCount?: number;
-  likeCount?: number;
-  bookmarkCount?: number;
-}
+import { date } from 'quasar';
+import type { PostData } from '@/types/post';
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PostData>(), {
   readCount: 0,
   commentCount: 0,
   likeCount: 0,
   bookmarkCount: 0
 });
+
+const formattedCreatedAt = computed(() => date.formatDate(props?.createdAt, 'YYYY-MM-DD HH:mm:ss'));
 </script>
 
 <template>
@@ -41,7 +32,7 @@ withDefaults(defineProps<Props>(), {
     </q-item-section>
     <q-item-section>
       <div class="flex items-center">
-        <span>닉네임 &middot;&nbsp;3일 전</span>
+        <span>닉네임 &middot;&nbsp;{{ formattedCreatedAt }}</span>
         <q-chip
           class="q-ml-sm"
           dense

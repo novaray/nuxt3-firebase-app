@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { PostData } from '~/types/post';
+
 interface Props {
-  items: any[];
+  items: PostData[];
 }
 
 defineProps<Props>();
