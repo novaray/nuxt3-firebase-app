@@ -56,4 +56,16 @@ watch(modelValue, (value) => {
   height: 0;
   pointer-events: none;
 }
+
+.editor__content {
+  // 추가 start
+  flex: 1;
+  display: flex;
+  overflow-y: auto;
+  padding: 16px 20px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  height: 400px;
+  // 추가 end
+}
 </style>

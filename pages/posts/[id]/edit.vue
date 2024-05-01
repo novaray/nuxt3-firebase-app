@@ -11,6 +11,27 @@ const getInitialForm = () => ({
 });
 
 const form = ref(getInitialForm());
+const loading = ref(false);
+
+const { getPost, updatePost } = usePost();
+
+const onSubmit = () => {
+  if (!confirm('수정하시겠어요?')) {
+    return;
+  }
+
+  loading.value = true;
+  return updatePost(form.value).finally(() => {
+    loading.value = false;
+  });
+};
+
+getPost().then((data) => {
+  form.value.title = data.title;
+  form.value.category = data.category;
+  form.value.content = data.content;
+  form.value.tags = data.tags;
+});
 </script>
 
 <template>
@@ -25,7 +46,8 @@ const form = ref(getInitialForm());
         v-model:category="form.category"
         v-model:content="form.content"
         v-model:tags="form.tags"
-        @submit.prevent
+        :loading="loading"
+        @submit="onSubmit"
       >
         <template #actions>
           <q-btn
@@ -38,6 +60,7 @@ const form = ref(getInitialForm());
             flat
             label="수정"
             color="primary"
+            :loading="loading"
           />
         </template>
       </AppsPostForm>

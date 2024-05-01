@@ -1,4 +1,25 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { date } from 'quasar';
+import type { PostData } from '~/types/post';
+
+const post = ref<PostData>();
+const { getPost, deletePost } = usePost();
+
+getPost().then((res) => {
+  post.value = res;
+});
+
+const router = useRouter();
+const onDeletePost = () => {
+  if (!confirm('정말 삭제하시겠습니까?')) {
+    return;
+  }
+
+  deletePost().then(() => {
+    router.push('/');
+  });
+};
+</script>
 
 <template>
   <AppsBaseCard class="q-pa-lg">
@@ -10,6 +31,7 @@
         dense
         color="grey"
         size="16px"
+        @click="$router.back()"
       />
       <q-space />
       <q-btn
@@ -38,7 +60,7 @@
       </q-avatar>
       <div class="q-ml-md">
         <div>짐코딩</div>
-        <div class="text-grey-6">3일 전</div>
+        <div class="text-grey-6">{{ date.formatDate(post?.createdAt, 'YYYY. MM. DD HH:mm:ss') }}</div>
       </div>
       <q-space />
       <q-btn
@@ -58,6 +80,7 @@
             <q-item
               v-close-popup
               clickable
+              @click="onDeletePost"
             >
               <q-item-section>삭제하기</q-item-section>
             </q-item>
@@ -66,38 +89,36 @@
       </q-btn>
     </div>
 
-    <div class="q-mt-md text-h5 text-weight-bold">제목입니다</div>
+    <div class="q-mt-md text-h5 text-weight-bold">{{ post?.title }}</div>
+    <div class="text-teal">
+      <span
+        v-for="tag in post?.tags ?? []"
+        :key="tag"
+      >
+        #{{ tag }}&nbsp;
+      </span>
+      {{ post?.category }}
+    </div>
     <div class="row items-center q-gutter-x-md q-mt-md justify-end">
       <AppsPostIcon
         name="sym_o_visibility"
-        label="1"
-        tooltip="조회수"
+        :label="post?.readCount ?? 0"
       />
       <AppsPostIcon
         name="sym_o_sms"
-        label="2"
-        tooltip="댓글수"
+        :label="post?.commentCount ?? 0"
       />
       <AppsPostIcon
         name="sym_o_favorite"
-        label="3"
-        tooltip="좋아요"
+        :label="post?.likeCount ?? 0"
       />
       <AppsPostIcon
         name="sym_o_bookmark"
-        label="4"
-        tooltip="북마크"
+        :label="post?.bookmarkCount ?? 0"
       />
     </div>
     <q-separator class="q-my-lg" />
-    <div>
-      lorem ipsum dolor sit amet <br />
-      lorem ipsum dolor sit amet <br />
-      lorem ipsum dolor sit amet <br />
-      lorem ipsum dolor sit amet <br />
-      lorem ipsum dolor sit amet <br />
-      lorem ipsum dolor sit amet <br />
-    </div>
+    <TiptapViewer :content="post?.content" />
   </AppsBaseCard>
 </template>
 

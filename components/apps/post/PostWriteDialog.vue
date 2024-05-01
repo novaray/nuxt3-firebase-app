@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { Post } from '@/service';
 
+interface Emits {
+  (event: 'complete'): void;
+}
+const emit = defineEmits<Emits>();
+
 const getInitialForm = () => ({
   title: '',
   category: '',
@@ -15,7 +20,6 @@ const onHide = () => {
 };
 
 const authStore = useAuthStore();
-const router = useRouter();
 const loading = ref(false);
 const onSubmit = () => {
   Post.createPost({
@@ -24,7 +28,7 @@ const onSubmit = () => {
   })
     .then((postId) => {
       console.log(`postId: ${postId}`);
-      router.push(`/posts/${postId}`);
+      emit('complete');
     })
     .catch((error) => {
       Notify.create({

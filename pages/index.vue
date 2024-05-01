@@ -8,10 +8,11 @@ import type { PostData } from '~/types/post';
 const posts = ref<PostData[]>([]);
 const params = ref({
   category: null,
-  tags: []
+  tags: [],
+  sort: 'createdAt'
 });
 
-watch([() => params.value.category, () => params.value.tags], () => {
+const setPosts = () => {
   Post.getPosts(params.value)
     .then((res) => {
       posts.value = res;
@@ -19,23 +20,27 @@ watch([() => params.value.category, () => params.value.tags], () => {
     .catch((err) => {
       console.error(err);
     });
-});
+};
+
+watch(
+  [() => params.value.category, () => params.value.tags, () => params.value.sort],
+  () => {
+    setPosts();
+  },
+  {
+    immediate: true
+  }
+);
 
 const postDialog = ref(false);
 const openWriteDialog = () => {
   postDialog.value = true;
 };
 
-onMounted(() => {
-  Post.getPosts(params.value)
-    .then((res) => {
-      console.log(res);
-      posts.value = res;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-});
+const onCompleteRegistrationPost = () => {
+  postDialog.value = false;
+  setPosts();
+};
 </script>
 
 <template>
@@ -46,7 +51,7 @@ onMounted(() => {
         class="col-grow"
       />
       <section class="col-7">
-        <AppsPostHeader />
+        <AppsPostHeader v-model="params.sort" />
         <AppsPostList :items="posts" />
       </section>
       <AppsPostRightBar
@@ -55,7 +60,10 @@ onMounted(() => {
         @open-write-dialog="openWriteDialog"
       />
     </div>
-    <AppsPostWriteDialog v-model="postDialog" />
+    <AppsPostWriteDialog
+      v-model="postDialog"
+      @complete="onCompleteRegistrationPost"
+    />
   </q-page>
 </template>
 
