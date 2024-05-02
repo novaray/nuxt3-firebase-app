@@ -132,3 +132,12 @@ Nuxt3에서는 `plugin`을 이용해서 전역 에러를 핸들링할 수 있다
 `addDoc`는 `document`를 추가할 때 사용하며, `document`의 `id`는 자동으로 생성된다.  
 `setDoc`는 `document`를 추가할 때 사용하며, `document`의 `id`를 직접 지정할 수 있다(자동으로도 생성 가능).  
 또한, `setDoc`는 `document`가 이미 존재할 때, `document`를 업데이트할 때 사용한다(없으면 생성한다).
+
+## firebase startAt, startAfter, endAt, endBefore
+`startAt`은 해당 값 이상, `startAfter`는 해당 값 초과, `endAt`은 해당 값 이하, `endBefore`는 해당 값 미만을 의미한다.    
+
+내림차순일 때 조심해야하는데,  
+만약 데이터에서 조회수가 3, 2, 1있고 조회수 기준으로 내림차순이 적용되어있고, `endAt`을 2로 설정하면 3, 2가 조회된다.  
+`endBefore`를 2로 설정하면 3만 조회된다.  
+`startAt`을 2로 설정하면 2, 1이 조회되고, `startAfter`를 2로 설정하면 1만 조회된다.
+

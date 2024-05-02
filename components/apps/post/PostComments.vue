@@ -1,33 +1,75 @@
 <script setup lang="ts">
+import { Comment } from '@/service';
+import type { CommentData } from '~/types/comment';
+
 const isActive = ref(false);
 const toggleActive = () => (isActive.value = !isActive.value);
 
-const comments = ref([{ id: 1 }, { id: 2 }, { id: 3 }]);
+const route = useRoute();
+
+const comments = ref<CommentData[]>([]);
+const commentTitle = computed(() => `댓글 ${comments.value.length}`);
+
+const getComments = () => {
+  Comment.getComments(route.params.id as string).then((commentsData) => {
+    comments.value = commentsData;
+  });
+};
+
+getComments();
+
+const authStore = useAuthStore();
+const message = ref('');
+const addLoading = ref(false);
+const onSubmitAddComment = () => {
+  addLoading.value = true;
+  Comment.addComment(route.params.id as string, {
+    message: message.value,
+    uid: authStore.uid
+  })
+    .then(() => {
+      getComments();
+      message.value = '';
+    })
+    .catch(useFireStoreError)
+    .finally(() => {
+      isActive.value = false;
+      addLoading.value = false;
+    });
+};
+
+const onDeletedComment = () => getComments();
 </script>
 
 <template>
   <div>
-    <div class="text-subtitle1 text-weight-bold q-mb-lg">댓글 6</div>
+    <div class="text-subtitle1 text-weight-bold q-mb-lg">{{ commentTitle }}</div>
 
     <div v-show="isActive">
-      <q-input
-        type="textarea"
-        class="bg-white"
-        outlined
-      />
-      <div class="flex justify-end q-gutter-x-sm q-mt-sm">
-        <q-btn
-          label="취소"
-          color="dark"
-          unelevated
-          @click="toggleActive"
+      <q-form @submit.prevent="onSubmitAddComment">
+        <q-input
+          v-model="message"
+          type="textarea"
+          outlined
+          hide-bottom-space
+          :rules="[ValidationRules.validateRequired]"
         />
-        <q-btn
-          label="등록"
-          color="primary"
-          unelevated
-        />
-      </div>
+        <div class="flex justify-end q-gutter-x-sm q-mt-sm">
+          <q-btn
+            label="취소"
+            color="dark"
+            unelevated
+            @click="toggleActive"
+          />
+          <q-btn
+            type="submit"
+            label="등록"
+            color="primary"
+            unelevated
+            :loading="addLoading"
+          />
+        </div>
+      </q-form>
     </div>
 
     <AppsBaseCard
@@ -46,7 +88,11 @@ const comments = ref([{ id: 1 }, { id: 2 }, { id: 3 }]);
       </q-card-section>
     </AppsBaseCard>
 
-    <AppsCommentList :items="comments" />
+    <AppsCommentList
+      :items="comments"
+      :post-id="route.params.id as string"
+      @deleted="onDeletedComment"
+    />
   </div>
 </template>
 

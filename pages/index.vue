@@ -6,16 +6,26 @@ import { Post } from '@/service';
 import type { PostData } from '~/types/post';
 
 const posts = ref<PostData[]>([]);
+const startPost = ref<PostData>();
+const loadMore = ref(true);
 const params = ref({
   category: null,
   tags: [],
-  sort: 'createdAt'
+  sort: 'createdAt',
+  limit: 2
 });
 
-const setPosts = () => {
-  Post.getPosts(params.value)
+const setPosts = (parameters: Record<string, any>) => {
+  Post.getPosts(parameters)
     .then((res) => {
-      posts.value = res;
+      if (startPost.value) {
+        posts.value = posts.value.concat(res.items);
+      } else {
+        posts.value = res.items;
+      }
+
+      loadMore.value = res.items.length >= params.value.limit;
+      startPost.value = res.lastItem;
     })
     .catch((err) => {
       console.error(err);
@@ -25,7 +35,8 @@ const setPosts = () => {
 watch(
   [() => params.value.category, () => params.value.tags, () => params.value.sort],
   () => {
-    setPosts();
+    startPost.value = undefined;
+    setPosts(params.value);
   },
   {
     immediate: true
@@ -39,7 +50,15 @@ const openWriteDialog = () => {
 
 const onCompleteRegistrationPost = () => {
   postDialog.value = false;
-  setPosts();
+  startPost.value = undefined;
+  setPosts(params.value);
+};
+
+const onLoadMore = () => {
+  setPosts({
+    ...params.value,
+    start: startPost.value
+  });
 };
 </script>
 
@@ -53,6 +72,13 @@ const onCompleteRegistrationPost = () => {
       <section class="col-7">
         <AppsPostHeader v-model="params.sort" />
         <AppsPostList :items="posts" />
+        <q-btn
+          v-if="loadMore"
+          class="full-width q-mt-md"
+          label="더보기"
+          outline
+          @click="onLoadMore"
+        />
       </section>
       <AppsPostRightBar
         v-model:tags="params.tags"
