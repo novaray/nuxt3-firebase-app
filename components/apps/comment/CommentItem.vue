@@ -1,4 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { date } from 'quasar';
+import type { CommentData } from '@/types/comment';
+defineProps<CommentData>();
+
+interface Emits {
+  (event: 'delete', id: string): void;
+}
+const emit = defineEmits<Emits>();
+</script>
 
 <template>
   <q-item class="q-py-md">
@@ -17,11 +26,10 @@
       <div class="flex text-caption">
         <span>짐코딩</span>
         <span class="q-mx-xs">&middot;</span>
-        <span class="text-grey-6">3일 전</span>
+        <span class="text-grey-6">{{ date.formatDate(createdAt, 'YYYY. MM. DD HH:mm:ss') }}</span>
       </div>
       <div class="q-mt-sm">
-        lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua.
+        {{ message }}
       </div>
     </q-item-section>
     <q-item-section
@@ -34,6 +42,7 @@
         icon="sym_o_delete"
         round
         dense
+        @click="emit('delete', id)"
       />
     </q-item-section>
   </q-item>
