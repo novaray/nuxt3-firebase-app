@@ -7,12 +7,7 @@ export const usePost = () => {
   const getPost = () => {
     return Post.getPost(route.params.id as string)
       .then((data) => data)
-      .catch((err) => {
-        Notify.create({
-          type: 'negative',
-          message: ErrorMessages.getErrorMessage(err.code)
-        });
-      });
+      .catch(useFireStoreError);
   };
 
   const updatePost = (form: PostForm) => {
@@ -23,12 +18,7 @@ export const usePost = () => {
           message: '수정이 완료되었습니다.'
         });
       })
-      .catch((err) => {
-        Notify.create({
-          type: 'negative',
-          message: ErrorMessages.getErrorMessage(err.code)
-        });
-      });
+      .catch(useFireStoreError);
   };
 
   const deletePost = () => {
@@ -39,12 +29,7 @@ export const usePost = () => {
           message: '삭제가 완료되었습니다.'
         });
       })
-      .catch((err) => {
-        Notify.create({
-          type: 'negative',
-          message: ErrorMessages.getErrorMessage(err.code)
-        });
-      });
+      .catch(useFireStoreError);
   };
 
   return {
