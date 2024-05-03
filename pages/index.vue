@@ -2,6 +2,7 @@
 // const goPostDetails = async (id: number) => {
 //   await navigateTo(`/posts/${id}`);
 // };
+import type { Directive } from 'vue';
 import { Post } from '@/service';
 import type { PostData } from '~/types/post';
 
@@ -12,7 +13,7 @@ const params = ref({
   category: null,
   tags: [],
   sort: 'createdAt',
-  limit: 2
+  limit: 4
 });
 
 const setPosts = (parameters: Record<string, any>) => {
@@ -32,16 +33,10 @@ const setPosts = (parameters: Record<string, any>) => {
     });
 };
 
-watch(
-  [() => params.value.category, () => params.value.tags, () => params.value.sort],
-  () => {
-    startPost.value = undefined;
-    setPosts(params.value);
-  },
-  {
-    immediate: true
-  }
-);
+watch([() => params.value.category, () => params.value.tags, () => params.value.sort], () => {
+  startPost.value = undefined;
+  setPosts(params.value);
+});
 
 const postDialog = ref(false);
 const openWriteDialog = () => {
@@ -52,6 +47,20 @@ const onCompleteRegistrationPost = () => {
   postDialog.value = false;
   startPost.value = undefined;
   setPosts(params.value);
+};
+
+const vIntersectionObserver: Directive = {
+  beforeMount: (el, binding) => {
+    const observer = new IntersectionObserver(binding.value);
+    observer.observe(el);
+  }
+};
+
+const handleIntersectionObserver = ([{ isIntersecting }]: [{ isIntersecting: boolean }]) => {
+  if (isIntersecting && loadMore.value) {
+    console.log('isIntersecting');
+    onLoadMore();
+  }
 };
 
 const onLoadMore = () => {
@@ -72,13 +81,7 @@ const onLoadMore = () => {
       <section class="col-7">
         <AppsPostHeader v-model="params.sort" />
         <AppsPostList :items="posts" />
-        <q-btn
-          v-if="loadMore"
-          class="full-width q-mt-md"
-          label="더보기"
-          outline
-          @click="onLoadMore"
-        />
+        <div v-intersection-observer="handleIntersectionObserver"></div>
       </section>
       <AppsPostRightBar
         v-model:tags="params.tags"
