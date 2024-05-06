@@ -6,15 +6,17 @@ import type { Directive } from 'vue';
 import { Post } from '@/service';
 import type { PostData } from '@/types/post';
 
+const { category, sort, tags } = usePostQuery();
+
 const posts = ref<PostData[]>([]);
 const startPost = ref<PostData>();
 const loadMore = ref(true);
-const params = ref({
-  category: null,
-  tags: [],
-  sort: 'createdAt',
-  limit: 4
-});
+const params = computed(() => ({
+  category: category.value,
+  tags: tags.value,
+  sort: sort.value,
+  limit: 5
+}));
 
 const setPosts = (parameters: Record<string, any>) => {
   Post.getPosts(parameters)
@@ -75,16 +77,16 @@ const onLoadMore = () => {
   <q-page padding>
     <div class="row q-gutter-x-lg">
       <AppsPostLeftBar
-        v-model="params.category"
+        v-model="category"
         class="col-grow"
       />
       <section class="col-7">
-        <AppsPostHeader v-model="params.sort" />
+        <AppsPostHeader v-model="sort" />
         <AppsPostList :items="posts" />
         <div v-intersection-observer="handleIntersectionObserver"></div>
       </section>
       <AppsPostRightBar
-        v-model:tags="params.tags"
+        v-model:tags="tags"
         class="col-3"
         @open-write-dialog="openWriteDialog"
       />

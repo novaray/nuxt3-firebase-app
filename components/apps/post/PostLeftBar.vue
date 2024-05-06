@@ -19,7 +19,7 @@ const categories = getCategories();
       >
         <q-item
           v-ripple
-          :active="modelValue === null"
+          :active="modelValue == null || modelValue === ''"
           clickable
           @click="modelValue = null"
         >
