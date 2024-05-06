@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { date } from 'quasar';
 import type { PostData } from '@/types/post';
+import { RelativeTimeFormat } from '@/utils/relativeTimeFormat';
 
 const props = withDefaults(defineProps<PostData>(), {
   readCount: 0,
@@ -9,7 +9,7 @@ const props = withDefaults(defineProps<PostData>(), {
   bookmarkCount: 0
 });
 
-const formattedCreatedAt = computed(() => date.formatDate(props?.createdAt, 'YYYY-MM-DD HH:mm:ss'));
+const formattedCreatedAt = computed(() => RelativeTimeFormat.formatRelativeTime(props?.createdAt));
 </script>
 
 <template>
