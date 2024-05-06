@@ -4,7 +4,7 @@
 // };
 import type { Directive } from 'vue';
 import { Post } from '@/service';
-import type { PostData } from '~/types/post';
+import type { PostData } from '@/types/post';
 
 const posts = ref<PostData[]>([]);
 const startPost = ref<PostData>();
