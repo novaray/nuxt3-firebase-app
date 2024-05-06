@@ -12,7 +12,6 @@ export class RelativeTimeFormat {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
     const years = Math.floor(hours / 365);
-    console.log(seconds, minutes, hours, days, years);
     if (years > 0) {
       return rtf.format(-years, 'year');
     } else if (days > 0) {
