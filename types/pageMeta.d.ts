@@ -1,6 +1,7 @@
 declare module '#app' {
   interface PageMeta {
     width?: string;
+    requiresAuth?: boolean;
   }
 }
 

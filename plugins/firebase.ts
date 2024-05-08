@@ -29,6 +29,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   const authStore = useAuthStore();
   onAuthStateChanged(auth, (user) => {
     console.log('### User: ', user);
+    if (import.meta.server) {
+      return;
+    }
+
     authStore.setUser(user);
   });
 
