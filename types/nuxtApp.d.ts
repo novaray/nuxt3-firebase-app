@@ -5,3 +5,11 @@ declare module '#app' {
     $auth: Auth;
   }
 }
+
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $auth: Auth;
+  }
+}
+
+export {};

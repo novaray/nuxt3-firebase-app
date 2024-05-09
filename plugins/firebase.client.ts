@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore } from '@firebase/firestore';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
@@ -19,20 +20,16 @@ export default defineNuxtPlugin((nuxtApp) => {
   // const analytics = getAnalytics(app);
   const auth = getAuth(app);
   // const firestore = getFirestore(app);
-  // const db = getFirestore(app);
+  const db = getFirestore(app);
 
-  // nuxtApp.vueApp.provide('auth', auth);
-  // nuxtApp.provide('auth', auth);
-  // nuxtApp.vueApp.provide('db', db);
-  // nuxtApp.provide('db', db);
+  nuxtApp.vueApp.provide('auth', auth);
+  nuxtApp.provide('auth', auth);
+  nuxtApp.vueApp.provide('db', db);
+  nuxtApp.provide('db', db);
 
   const authStore = useAuthStore();
   onAuthStateChanged(auth, (user) => {
     console.log('### User: ', user);
-    if (import.meta.server) {
-      return;
-    }
-
     authStore.setUser(user);
   });
 

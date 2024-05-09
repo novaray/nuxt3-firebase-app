@@ -19,6 +19,13 @@ const form = ref<SignIn>({
 const { pending, error, execute, status } = useAsyncData('signIn', () => Auth.signInWithEmail(form.value), {
   immediate: false
 });
+const errorCode = computed(() => {
+  if (error.value == null) {
+    return '';
+  }
+
+  return error.value.cause?.code ?? '';
+});
 
 const onSubmitEmail = async () => {
   await execute();
@@ -93,7 +100,7 @@ const onClickSignInGoogle = () => {
         dense
         hide-bottom-space
       />
-      <DisplayError :code="error?.cause.code" />
+      <DisplayError :code="errorCode" />
       <div>
         <q-btn
           type="submit"
