@@ -7,6 +7,8 @@ interface Emits {
   (event: 'delete', id: string): void;
 }
 const emit = defineEmits<Emits>();
+
+const { hasOwnContent } = useAuthStore();
 </script>
 
 <template>
@@ -33,6 +35,7 @@ const emit = defineEmits<Emits>();
       </div>
     </q-item-section>
     <q-item-section
+      v-if="hasOwnContent(uid)"
       side
       top
     >

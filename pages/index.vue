@@ -7,6 +7,7 @@ import { Post } from '@/service';
 import type { PostData } from '@/types/post';
 
 const { category, sort, tags } = usePostQuery();
+const authStore = useAuthStore();
 
 const posts = ref<PostData[]>([]);
 const startPost = ref<PostData>();
@@ -42,6 +43,10 @@ watch([() => params.value.category, () => params.value.tags, () => params.value.
 
 const postDialog = ref(false);
 const openWriteDialog = () => {
+  if (!authStore.isAuthenticated) {
+    return alert('로그인 후 이용 가능합니다.');
+  }
+
   postDialog.value = true;
 };
 

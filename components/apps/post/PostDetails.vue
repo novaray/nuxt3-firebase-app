@@ -2,6 +2,8 @@
 import { date } from 'quasar';
 import type { PostData } from '~/types/post';
 
+const { hasOwnContent } = useAuthStore();
+
 const post = ref<PostData>();
 const { getPost, deletePost } = usePost();
 
@@ -64,6 +66,7 @@ const onDeletePost = () => {
       </div>
       <q-space />
       <q-btn
+        v-if="hasOwnContent(post?.uid ?? '')"
         icon="more_horiz"
         round
         flat

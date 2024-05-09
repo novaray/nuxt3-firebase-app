@@ -2,8 +2,16 @@
 import { Comment } from '@/service';
 import type { CommentData } from '~/types/comment';
 
+const authStore = useAuthStore();
+
 const isActive = ref(false);
-const toggleActive = () => (isActive.value = !isActive.value);
+const toggleActive = () => {
+  if (!isActive.value && !authStore.isAuthenticated) {
+    return alert('로그인 후 이용 가능합니다.');
+  }
+
+  return (isActive.value = !isActive.value);
+};
 
 const route = useRoute();
 
@@ -18,7 +26,6 @@ const getComments = () => {
 
 getComments();
 
-const authStore = useAuthStore();
 const message = ref('');
 const addLoading = ref(false);
 const onSubmitAddComment = () => {

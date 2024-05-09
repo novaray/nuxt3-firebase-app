@@ -36,6 +36,13 @@ export const useAuthStore = defineStore('auth', {
       }
 
       this.user = user;
+    },
+    hasOwnContent(contentUid: string) {
+      if (!this.isAuthenticated) {
+        return false;
+      }
+
+      return this.uid === contentUid;
     }
   },
   persist: true
