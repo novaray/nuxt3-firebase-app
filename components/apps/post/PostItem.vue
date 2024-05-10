@@ -10,6 +10,14 @@ const props = withDefaults(defineProps<PostData>(), {
 });
 
 const formattedCreatedAt = computed(() => RelativeTimeFormat.formatRelativeTime(props?.createdAt));
+
+const {
+  isLike,
+  likeCount: activeLikeCount,
+  onToggleLike
+} = useLike(props.id, {
+  initialCount: props.likeCount
+});
 </script>
 
 <template>
@@ -80,11 +88,11 @@ const formattedCreatedAt = computed(() => RelativeTimeFormat.formatRelativeTime(
               class="full-width"
               flat
               dense
-              @click.prevent
+              @click.prevent="onToggleLike"
             >
               <AppsPostIcon
-                name="sym_o_favorite"
-                :label="likeCount"
+                :name="isLike ? 'favorite' : 'sym_o_favorite'"
+                :label="activeLikeCount"
                 tooltip="좋아요"
               />
             </q-btn>

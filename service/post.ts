@@ -3,8 +3,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  endAt,
-  endBefore,
   getDoc,
   getDocs,
   getFirestore,
@@ -16,8 +14,8 @@ import {
   QueryOrderByConstraint,
   QueryStartAtConstraint,
   serverTimestamp,
+  setDoc,
   startAfter,
-  startAt,
   updateDoc,
   where
 } from '@firebase/firestore';
@@ -127,5 +125,26 @@ export class Post {
   static deletePost(id: string) {
     const db = getFirestore();
     return deleteDoc(doc(db, 'posts', id));
+  }
+
+  static addLike(uid: string, postId: string) {
+    const db = getFirestore();
+    return setDoc(doc(db, 'post_likes', `${uid}_${postId}`), {
+      postId,
+      uid,
+      createdAt: serverTimestamp()
+    });
+  }
+
+  static removeLike(uid: string, postId: string) {
+    const db = getFirestore();
+    return deleteDoc(doc(db, 'post_likes', `${uid}_${postId}`));
+  }
+
+  static hasLike(uid: string, postId: string) {
+    const db = getFirestore();
+    return getDoc(doc(db, 'post_likes', `${uid}_${postId}`)).then((docSnap) => {
+      return docSnap.exists();
+    });
   }
 }

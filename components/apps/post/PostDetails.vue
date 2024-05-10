@@ -7,8 +7,12 @@ const { hasOwnContent } = useAuthStore();
 const post = ref<PostData>();
 const { getPost, deletePost } = usePost();
 
+const route = useRoute();
+const { isLike, likeCount, updateLikeCount, onToggleLike } = useLike(route.params.id as string);
+
 getPost().then((res) => {
   post.value = res;
+  updateLikeCount(res.likeCount);
 });
 
 const router = useRouter();
@@ -37,12 +41,13 @@ const onDeletePost = () => {
       />
       <q-space />
       <q-btn
-        icon="sym_o_favorite"
+        :icon="isLike ? 'favorite' : 'sym_o_favorite'"
         flat
         round
         dense
         color="red"
         size="16px"
+        @click="onToggleLike"
       />
       <q-btn
         icon="sym_o_bookmark"
@@ -113,7 +118,7 @@ const onDeletePost = () => {
       />
       <AppsPostIcon
         name="sym_o_favorite"
-        :label="post?.likeCount ?? 0"
+        :label="likeCount"
       />
       <AppsPostIcon
         name="sym_o_bookmark"
