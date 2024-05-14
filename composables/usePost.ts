@@ -10,6 +10,12 @@ export const usePost = () => {
       .catch(useFireStoreError);
   };
 
+  const getPostDetail = () => {
+    return Post.getPostDetails(route.params.id as string)
+      .then((data) => data)
+      .catch(useFireStoreError);
+  };
+
   const updatePost = (form: PostForm) => {
     return Post.updatePost(route.params.id as string, form)
       .then(() => {
@@ -34,6 +40,7 @@ export const usePost = () => {
 
   return {
     getPost,
+    getPostDetail,
     updatePost,
     deletePost
   };

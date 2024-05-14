@@ -17,7 +17,8 @@ import {
   setDoc,
   startAfter,
   updateDoc,
-  where
+  where,
+  increment
 } from '@firebase/firestore';
 import type { CreatePostRequest, PostData, PostForm } from '@/types/post';
 
@@ -113,6 +114,31 @@ export class Post {
         createdAt: data!.createdAt?.toDate()
       };
     });
+  }
+
+  static incrementReadCount(id: string) {
+    const db = getFirestore();
+    return updateDoc(doc(db, 'posts', id), {
+      readCount: increment(1)
+    });
+  }
+
+  static getPostDetails(id: string): Promise<{ post: any }> {
+    if (import.meta.server) {
+      return this.getPost(id).then((post) => {
+        return {
+          post
+        };
+      });
+    }
+
+    return this.incrementReadCount(id)
+      .then(() => this.getPost(id))
+      .then((post) => {
+        return {
+          post
+        };
+      });
   }
 
   static updatePost(id: string, form: PostForm) {

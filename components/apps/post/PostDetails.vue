@@ -5,14 +5,18 @@ import type { PostData } from '~/types/post';
 const { hasOwnContent } = useAuthStore();
 
 const post = ref<PostData>();
-const { getPost, deletePost } = usePost();
+const { getPostDetail, deletePost } = usePost();
 
 const route = useRoute();
 const { isLike, likeCount, updateLikeCount, onToggleLike } = useLike(route.params.id as string);
 
-getPost().then((res) => {
-  post.value = res;
-  updateLikeCount(res.likeCount);
+getPostDetail().then((result) => {
+  if (!result) {
+    return;
+  }
+
+  post.value = result.post;
+  updateLikeCount(result.post.likeCount);
 });
 
 const router = useRouter();
