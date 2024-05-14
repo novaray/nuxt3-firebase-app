@@ -19,7 +19,7 @@ import {
   updateDoc,
   where
 } from '@firebase/firestore';
-import type { CreatePostRequest, PostForm } from '@/types/post';
+import type { CreatePostRequest, PostData, PostForm } from '@/types/post';
 
 export class Post {
   static createPost(data: CreatePostRequest) {
@@ -109,6 +109,7 @@ export class Post {
 
       return {
         ...data,
+        id: docSnap.id,
         createdAt: data!.createdAt?.toDate()
       };
     });
@@ -145,6 +146,33 @@ export class Post {
     const db = getFirestore();
     return getDoc(doc(db, 'post_likes', `${uid}_${postId}`)).then((docSnap) => {
       return docSnap.exists();
+    });
+  }
+
+  static addBookmark(uid: string, postId: string) {
+    const db = getFirestore();
+    return setDoc(doc(db, 'users', uid, 'bookmarks', postId), {
+      createdAt: serverTimestamp()
+    });
+  }
+
+  static removeBookmark(uid: string, postId: string) {
+    const db = getFirestore();
+    return deleteDoc(doc(db, 'users', uid, 'bookmarks', postId));
+  }
+
+  static hasBookmark(uid: string, postId: string) {
+    const db = getFirestore();
+    return getDoc(doc(db, 'users', uid, 'bookmarks', postId)).then((docSnap) => {
+      return docSnap.exists();
+    });
+  }
+
+  static getUserBookmarks(uid: string): Promise<PostData[]> {
+    const db = getFirestore();
+    const q = query(collection(db, 'users', uid, 'bookmarks'), orderBy('createdAt', 'desc'), limit(6));
+    return getDocs(q).then((querySnapshot) => {
+      return Promise.all(querySnapshot.docs.map((docSnap) => this.getPost(docSnap.id)));
     });
   }
 }

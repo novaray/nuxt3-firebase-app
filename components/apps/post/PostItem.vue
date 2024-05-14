@@ -18,6 +18,14 @@ const {
 } = useLike(props.id, {
   initialCount: props.likeCount
 });
+
+const {
+  isBookmark,
+  bookmarkCount: activeBookmarkCount,
+  onToggleBookmark
+} = useBookmark(props.id, {
+  initialCount: props.bookmarkCount
+});
 </script>
 
 <template>
@@ -104,11 +112,11 @@ const {
               class="full-width"
               flat
               dense
-              @click.prevent
+              @click.prevent="onToggleBookmark"
             >
               <AppsPostIcon
-                name="sym_o_bookmark"
-                :label="bookmarkCount"
+                :name="isBookmark ? 'bookmark' : 'sym_o_bookmark'"
+                :label="activeBookmarkCount"
                 tooltip="북마크"
               />
             </q-btn>
