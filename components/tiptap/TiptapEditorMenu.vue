@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // @ts-ignore
 import { Editor } from '@tiptap/core';
+import { ImageService } from '~/service';
 
 interface Props {
   editor: Editor;
@@ -39,6 +40,21 @@ const onClickImage = () => {
     props.editor.chain().focus().setImage({ src: url }).run();
   }
 };
+
+const fileRef = ref<HTMLInputElement>();
+const onFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  ImageService.uploadImage(file).then((url) => {
+    props.editor.chain().focus().setImage({ src: url }).run();
+  });
+  target.value = '';
+};
 </script>
 
 <template>
@@ -46,6 +62,13 @@ const onClickImage = () => {
     v-if="editor"
     class="flex q-pa-xs"
   >
+    <input
+      ref="fileRef"
+      type="file"
+      accept="*/image"
+      style="display: none"
+      @change="onFileChange"
+    />
     <q-btn
       :disabled="!editor.can().chain().focus().toggleBold().run()"
       :color="editor.isActive('bold') ? 'blue' : undefined"
@@ -115,6 +138,7 @@ const onClickImage = () => {
       flat
       dense
       icon="sym_o_photo_library"
+      @click="fileRef?.click()"
     />
 
     <q-btn
