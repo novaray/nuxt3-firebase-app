@@ -11,7 +11,8 @@ npm run dev
 해당 강의는 다음 강의를 보고 정리한 저장소이다.
 - https://www.inflearn.com/course/vue3-firebase10-%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0%EB%A7%8C%EB%93%A4%EA%B8%B0/dashboard
 
-위 강의는 Vue3 기반으로 강의를 진행하지만, 학습할 때는 Nuxt3로 진행하였다.
+위 강의는 Vue3 기반으로 강의를 진행하지만, 학습할 때는 Nuxt3로 진행하였다.  
+node 버전은 firebase에서 18을 권장하기에 18로 세팅한다.
 
 ## ESLint / Prettier 설정
 ```shell
@@ -163,4 +164,6 @@ Nuxt3에서는 `plugin`을 이용해서 전역 에러를 핸들링할 수 있다
 - Authentication Emulator
 - Storage Emulator
 
-그 외 항목들은 기본값으로 설정했다.
+그 외 항목들은 기본값으로 설정했다.  
+추가로, firebase는 node환경이므로 `required`, `exports` 구문을 사용해야하므로, 해당 폴더내의 파일들은 `eslint`를 비활성화 해버렸다.  
+물론, `package.json` 파일에서 `type`을 `module`로 설정하면 되지만 `node`환경을 좀 더 명확히 하고자 설정하지는 않았다.
