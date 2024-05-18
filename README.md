@@ -166,4 +166,41 @@ Nuxt3에서는 `plugin`을 이용해서 전역 에러를 핸들링할 수 있다
 
 그 외 항목들은 기본값으로 설정했다.  
 추가로, firebase는 node환경이므로 `required`, `exports` 구문을 사용해야하므로, 해당 폴더내의 파일들은 `eslint`를 비활성화 해버렸다.  
-물론, `package.json` 파일에서 `type`을 `module`로 설정하면 되지만 `node`환경을 좀 더 명확히 하고자 설정하지는 않았다.
+물론, `package.json` 파일에서 `type`을 `module`로 설정하면 되지만 `node`환경을 좀 더 명확히 하고자 설정하지는 않았다.  
+
+## firebase admin 인증
+firebase 콘솔 설정에서 `서비스 계정`을 클릭하고, `새 비공개 키 생성`을 클릭한다.  
+해당 파일은 `json` 파일로 다운로드 받는데, 해당 파일을 `functions` 폴더에 넣어두면 된다.
+
+해당 파일은 노출되면 안 되므로 `.gitignore`에 추가해두었고,  
+`firebase/functions/index.ts` 파일에서 `serviceAccountKey.json` 파일에 저장해 사용하고 있다.
+
+## cloud functions 타입스크립트
+`firebase/functions/package.json`파일에서 `main` 경로가 `lib/index.js`로 되어있는데,  
+이게 자바스크립트로 설정했을 때의 경로가 그대로 적혀있는 줄 알고 `src/index.ts`파일로 수정했었다.  
+실제로 에물레이터로 실행할 때도 타입 지정만 안 하면 실행도 잘 되길래 문제없는 줄 알았다.
+
+그러나, 배포를 할 때 문제가 되었는데 계속 타입스크립트 파일을 인식 못해서 배포에 에러가 발생하는 것이었다.  
+타입스크립트 파일을 빌드해서, 결과물로 나온 `lib/index.js`파일을 배포해야 되는 것이었다.  
+즉, 다음의 순서를 따라야 한다.
+1. 작성한 타입스크립트 파일을 빌드한다(`npm run build`(`tsc`)).
+2. 빌드된 결과물을 배포한다.
+
+이럴거면 처음 세팅할 때 타입스크립트말고 자바스크립트로 설정하는 것이 훨씬 편하지 않나라는 생각은 든다.
+
+`firebase/functions/index.ts`을 처음 작성할 때 에뮬레이터에서 오류가 나서 타입지정을 빼버렸는데 다 이유가 있는 거였다.  
+`//@ts-ignore`를 사용해서 타입지정 주석은 그냥 남겨두었다.
+
+그리고,  
+어떤 유저가 `package.json`의 `moduleResolution`까지 세팅을 해주어야 한다고 해서 세팅도 해주었다.
+
+## cloud functions 배포 후 문제시 재배포 할 때
+cloud functions를 배포하고, 제대로 배포가 안 되어 문제가 생긴 후 재배포할 때 다시 배포가 안 된다.  
+문제가 생긴 함수를 덮어쓰는 기능이 없는 것인지는 모르겠지만, 삭제 후 다시 배포를 해야한다.
+
+`firebase console`에서 함수를 삭제 못하고 `CLI`로 삭제를 해야한다.  
+```shell
+firebase functions:delete 함수이름
+```
+
+> https://firebase.google.com/docs/functions/manage-functions?gen=2nd&hl=ko#delete_functions
