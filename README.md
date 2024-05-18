@@ -141,3 +141,26 @@ Nuxt3에서는 `plugin`을 이용해서 전역 에러를 핸들링할 수 있다
 `endBefore`를 2로 설정하면 3만 조회된다.  
 `startAt`을 2로 설정하면 2, 1이 조회되고, `startAfter`를 2로 설정하면 1만 조회된다.
 
+## Cloud Functions
+`cloud functions`는 서버리스 함수를 만들 수 있는 서비스이다.  
+해당 기능을 사용하려면 구글 결제 정보를 등록해야 한다(무료 요금제로는 사용이 불가능).
+
+다음 링크를 따라 설치를 진행했다.  
+- https://firebase.google.com/docs/functions/get-started?hl=ko&gen=2nd#initialize-your-project
+
+`firebase init` 명령어를 터미널에서 `firebase` 디렉토리 경로 안에서 실행을 했다.
+
+설치할 때는 다음의 설정을 선택했다.
+- Firestore
+- Functions
+- Hosting
+- Storage
+- Emulators: 에뮬레이터는 작성한 함수를 로컬에서 테스트할 수 있는 환경을 제공한다.
+
+`Emulators` 셋업에서 선택한 항목은 다음과 같다.
+- Firestore Emulator
+- Functions Emulator
+- Authentication Emulator
+- Storage Emulator
+
+그 외 항목들은 기본값으로 설정했다.
