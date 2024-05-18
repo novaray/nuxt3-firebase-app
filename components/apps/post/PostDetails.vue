@@ -9,6 +9,7 @@ const { getPostDetail, deletePost } = usePost();
 
 const route = useRoute();
 const { isLike, likeCount, updateLikeCount, onToggleLike } = useLike(route.params.id as string);
+const { isBookmark, bookmarkCount, onToggleBookmark, updateBookmarkCount } = useBookmark(route.params.id as string);
 
 getPostDetail().then((result) => {
   if (!result) {
@@ -17,6 +18,7 @@ getPostDetail().then((result) => {
 
   post.value = result.post;
   updateLikeCount(result.post.likeCount);
+  updateBookmarkCount(result.post.bookmarkCount);
 });
 
 const router = useRouter();
@@ -54,12 +56,13 @@ const onDeletePost = () => {
         @click="onToggleLike"
       />
       <q-btn
-        icon="sym_o_bookmark"
+        :icon="isBookmark ? 'bookmark' : 'sym_o_bookmark'"
         flat
         round
         dense
         color="blue"
         size="16px"
+        @click="onToggleBookmark"
       />
     </div>
     <div class="flex items-center">
@@ -126,7 +129,7 @@ const onDeletePost = () => {
       />
       <AppsPostIcon
         name="sym_o_bookmark"
-        :label="post?.bookmarkCount ?? 0"
+        :label="bookmarkCount"
       />
     </div>
     <q-separator class="q-my-lg" />
