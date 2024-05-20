@@ -204,3 +204,16 @@ firebase functions:delete 함수이름
 ```
 
 > https://firebase.google.com/docs/functions/manage-functions?gen=2nd&hl=ko#delete_functions
+
+## firebase 설치 후 webstorm typescript 에러 해결
+`firebase`를 설치하고, `webstorm`에서 타입스크립트 에러가 발생한다.  
+`vue`파일 및 일반적인 타입스크립트 파일에서 모두 에러가 발생했다.
+
+확인해보니,  
+`firebase`에서 세팅된 타입스크립트와 `nuxt`에서 세팅된 타입스크립트 버전이 달라서 발생한 문제였다.  
+`webstorm`에서 `firebase`의 타입스크립트 버전을 따라가게 세팅되어있어서 발생한 문제였다.  
+- 늦게 설치된 타입스크립트 버전을 따라가나..?
+  - firebase: 4.9.5
+  - nuxt: 5.4.3
+
+`Project Settings - Languages & Frameworks - TypeScript`에서 버전을 현 프로젝트 `node_modules`의 버전으로 변경해주면 된다. 
