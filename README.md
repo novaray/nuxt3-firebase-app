@@ -189,7 +189,7 @@ firebase 콘솔 설정에서 `서비스 계정`을 클릭하고, `새 비공개 
 이럴거면 처음 세팅할 때 타입스크립트말고 자바스크립트로 설정하는 것이 훨씬 편하지 않나라는 생각은 든다.
 
 `firebase/functions/index.ts`을 처음 작성할 때 에뮬레이터에서 오류가 나서 타입지정을 빼버렸는데 다 이유가 있는 거였다.  
-`//@ts-ignore`를 사용해서 타입지정 주석은 그냥 남겨두었다.
+`//@ts-ignore`를 사용해서 타입지정 주석은 그냥 남겨두었다. -> 2024/05/23에 제거함.
 
 그리고,  
 어떤 유저가 `package.json`의 `moduleResolution`까지 세팅을 해주어야 한다고 해서 세팅도 해주었다.
@@ -217,3 +217,8 @@ firebase functions:delete 함수이름
   - nuxt: 5.4.3
 
 `Project Settings - Languages & Frameworks - TypeScript`에서 버전을 현 프로젝트 `node_modules`의 버전으로 변경해주면 된다. 
+
+### 특정 함수만 배포하고 싶을 때 
+```shell
+firebase deploy --only functions:함수이름
+```

@@ -10,7 +10,6 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const form = ref<SignUp>({
-  nickname: '',
   email: '',
   password: ''
 });
@@ -38,14 +37,6 @@ const onSubmit = () => {
       class="q-gutter-y-md"
       @submit.prevent="onSubmit"
     >
-      <q-input
-        v-model="form.nickname"
-        :rules="[ValidationRules.validateRequired]"
-        placeholder="닉네임"
-        outlined
-        dense
-        hide-bottom-space
-      />
       <q-input
         v-model="form.email"
         :rules="[ValidationRules.validateRequired, ValidationRules.validateEmail]"

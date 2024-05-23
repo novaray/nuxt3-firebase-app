@@ -1,11 +1,14 @@
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
-const { logger } = require('firebase-functions');
-const { onDocumentCreated, onDocumentDeleted } = require('firebase-functions/v2/firestore');
+
+const functions = require('firebase-functions');
+
+const { onDocumentCreated, onDocumentDeleted, FirestoreEvent } = require('firebase-functions/v2/firestore');
 
 // The Firebase Admin SDK to access Firestore.
 const { initializeApp, cert } = require('firebase-admin/app');
-const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
 const serviceAccount = require('../serviceAccountKey.json');
+const { logger } = functions;
 
 const { setGlobalOptions } = require('firebase-functions/v2');
 setGlobalOptions({ maxInstances: 10 });
@@ -21,8 +24,7 @@ exports.onCreateBookmark = onDocumentCreated(
     region,
     document: 'users/{uid}/bookmarks/{postId}' // bookmarkId가 postId이니 postId로 사용.
   },
-  // @ts-ignore 타입을 지정하면 신택스 에러로 인식되어 ignore 처리함.
-  (event) => {
+  (event: typeof FirestoreEvent) => {
     const postId = event.params.postId;
     db.doc(`posts/${postId}`).update({
       bookmarkCount: FieldValue.increment(1)
@@ -35,8 +37,7 @@ exports.onDeleteBookmark = onDocumentDeleted(
     region,
     document: 'users/{uid}/bookmarks/{postId}'
   },
-  // @ts-ignore 타입을 지정하면 신택스 에러로 인식되어 ignore 처리함.
-  (event) => {
+  (event: typeof FirestoreEvent) => {
     const postId = event.params.postId;
     db.doc(`posts/${postId}`).update({
       bookmarkCount: FieldValue.increment(-1)
@@ -49,8 +50,7 @@ exports.onCreateComment = onDocumentCreated(
     region,
     document: 'posts/{postId}/comments/{commentId}'
   },
-  // @ts-ignore 타입을 지정하면 신택스 에러로 인식되어 ignore 처리함.
-  (event) => {
+  (event: typeof FirestoreEvent) => {
     const postId = event.params.postId;
     db.doc(`posts/${postId}`).update({
       commentCount: FieldValue.increment(1)
@@ -63,8 +63,7 @@ exports.onDeleteComment = onDocumentDeleted(
     region,
     document: 'posts/{postId}/comments/{commentId}'
   },
-  // @ts-ignore 타입을 지정하면 신택스 에러로 인식되어 ignore 처리함.
-  (event) => {
+  (event: typeof FirestoreEvent) => {
     const postId = event.params.postId;
     db.doc(`posts/${postId}`).update({
       commentCount: FieldValue.increment(-1)
@@ -77,8 +76,7 @@ exports.onCreateLike = onDocumentCreated(
     region,
     document: 'post_likes/{id}'
   },
-  // @ts-ignore 타입을 지정하면 신택스 에러로 인식되어 ignore 처리함.
-  (event) => {
+  (event: typeof FirestoreEvent) => {
     const snapshot = event.data;
     const data = snapshot.data();
     logger.log('data: ', data);
@@ -93,8 +91,7 @@ exports.onDeleteLike = onDocumentDeleted(
     region,
     document: 'post_likes/{id}'
   },
-  // @ts-ignore 타입을 지정하면 신택스 에러로 인식되어 ignore 처리함.
-  (event) => {
+  (event: typeof FirestoreEvent) => {
     const snapshot = event.data;
     const data = snapshot.data();
     logger.log('data: ', data);
@@ -103,3 +100,31 @@ exports.onDeleteLike = onDocumentDeleted(
     });
   }
 );
+
+exports.onCreateUser = functions
+  .region(region)
+  .auth.user()
+  .onCreate((user: any) => {
+    logger.log(user);
+    // providerData의 providerId가 password이면 다른 인증 체계(ex. google, ...etc)를 거치지 않은 직접 회원 가입한 경우.
+    const isPasswordProvider = user.providerData.some((provider: any) => provider.providerId === 'password');
+    const defaultPhotoUrl = `https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=${user.uid}`;
+    const displayName = isPasswordProvider ? user.email.split('@')[0] : user.displayName;
+
+    const photoURL = isPasswordProvider ? defaultPhotoUrl : user.photoURL;
+
+    return db.doc(`users/${user.uid}`).set({
+      email: user.email,
+      displayName,
+      photoURL,
+      createdAt: Timestamp.fromDate(new Date(user.metadata.creationTime))
+    });
+  });
+
+exports.onDeleteUser = functions
+  .region(region)
+  .auth.user()
+  .onDelete((user: any) => {
+    logger.log(user);
+    return db.doc(`users/${user.uid}`).delete();
+  });

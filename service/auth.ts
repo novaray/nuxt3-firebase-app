@@ -10,6 +10,7 @@ import {
 } from '@firebase/auth';
 import { getAuth, signInWithPopup, signOut } from 'firebase/auth';
 import type { SignIn, SignUp } from '@/types/sign';
+import { doc, getFirestore, updateDoc } from '@firebase/firestore';
 
 const DEFAULT_PHOTO_URL = 'https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=';
 
@@ -27,12 +28,11 @@ export class Auth {
     return signOut(auth);
   }
 
-  static signUpWithEmail({ email, password, nickname }: SignUp) {
+  static signUpWithEmail({ email, password }: SignUp) {
     return createUserWithEmailAndPassword(getAuth(), email, password)
       .then(({ user }) => {
-        console.log(`user: ${user}`);
         return updateProfile(user, {
-          displayName: nickname,
+          displayName: email.split('@')[0],
           photoURL: this.generateDefaultPhotoUrl(user.uid)
         });
       })
@@ -79,6 +79,11 @@ export class Auth {
 
     return updateProfile(user, {
       displayName
+    }).then(() => {
+      const db = getFirestore();
+      updateDoc(doc(db, 'users', user.uid), {
+        displayName
+      });
     });
   }
 
@@ -88,6 +93,11 @@ export class Auth {
       return Promise.reject(new Error('User is not signed in'));
     }
 
-    return updateEmail(user, email);
+    return updateEmail(user, email).then(() => {
+      const db = getFirestore();
+      updateDoc(doc(db, 'users', user.uid), {
+        email
+      });
+    });
   }
 }
