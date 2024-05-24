@@ -2,7 +2,12 @@
 
 const functions = require('firebase-functions');
 
-const { onDocumentCreated, onDocumentDeleted, FirestoreEvent } = require('firebase-functions/v2/firestore');
+const {
+  onDocumentCreated,
+  onDocumentDeleted,
+  FirestoreEvent,
+  onDocumentUpdated
+} = require('firebase-functions/v2/firestore');
 
 // The Firebase Admin SDK to access Firestore.
 const { initializeApp, cert } = require('firebase-admin/app');
@@ -128,3 +133,81 @@ exports.onDeleteUser = functions
     logger.log(user);
     return db.doc(`users/${user.uid}`).delete();
   });
+
+exports.onCreatePost = onDocumentCreated(
+  {
+    region,
+    document: 'posts/{postId}'
+  },
+  (event: typeof FirestoreEvent) => {
+    const data = event.data.data();
+    if (!data.tags) {
+      return;
+    }
+
+    updateTags(data.tags, 1);
+  }
+);
+
+exports.onDeletePost = onDocumentDeleted(
+  {
+    region,
+    document: 'posts/{postId}'
+  },
+  (event: typeof FirestoreEvent) => {
+    const data = event.data.data();
+    if (!data.tags) {
+      return;
+    }
+
+    updateTags(data.tags, -1);
+  }
+);
+
+exports.onUpdatePost = onDocumentUpdated(
+  {
+    region,
+    document: 'posts/{postId}'
+  },
+  (event: typeof FirestoreEvent) => {
+    // https://firebase.google.com/docs/functions/firestore-events?hl=ko&_gl=1*1m6t7n5*_up*MQ..*_ga*MTUwNDYwNjk4OS4xNzE2NTM2MDMx*_ga_CW55HF8NVT*MTcxNjUzNjAzMS4xLjAuMTcxNjUzNjAzMS4wLjAuMA..&gen=2nd#reading_and_writing_data
+    const prevData = event.data.before.data();
+    const data = event.data.after.data();
+
+    const tagsToRemove = differenceTags(prevData.tags, data.tags);
+    const tagsToAdd = differenceTags(data.tags, prevData.tags);
+    logger.log('tagsToRemove: ', tagsToRemove);
+    logger.log('tagsToAdd: ', tagsToAdd);
+
+    if (tagsToRemove.length) {
+      updateTags(tagsToRemove, -1);
+    }
+    if (tagsToAdd.length) {
+      updateTags(tagsToAdd, 1);
+    }
+  }
+);
+
+const differenceTags = (tags1: string[], tags2: string[]) => {
+  if (!tags1 || !tags2) {
+    return tags1;
+  }
+
+  return tags1.filter((tag) => !tags2.includes(tag));
+};
+
+const updateTags = (tags: string[] = [], incrementValue = 1) => {
+  tags
+    .map((tag) => tag.toLowerCase())
+    .forEach((tag) => {
+      db.doc(`tags/${tag}`).set(
+        {
+          name: tag,
+          count: FieldValue.increment(incrementValue)
+        },
+        {
+          merge: true
+        }
+      );
+    });
+};
