@@ -222,3 +222,61 @@ firebase functions:delete 함수이름
 ```shell
 firebase deploy --only functions:함수이름
 ```
+
+## algolia
+`algolia`는 검색엔진 서비스이다.  
+`Nuxt`에서 설치가이드는 Vue 설치가이드와는 다르다. 공식 문서는 다음과 같다.
+- https://algolia.nuxtjs.org/
+
+설치 스크립트는 다음과 같다.
+```shell
+npm install @nuxtjs/algolia
+```
+
+설치 후에, algolia 세팅을 `nuxt.config.ts`파일에 설정해주어야 한다.  
+`modules`에 설치한 `@nuxtjs/algolia`를 추가하고, `algolia` 객체를 추가해주면 된다.  
+그 외 설정은 Vue InstantSearch에서 설정하는 것과 동일하기에 `algolia` 공식 문서를 보면 된다.  
+> https://www.algolia.com/doc/api-reference/widgets/vue/
+
+데모를 보고 참조하면서 개발하는 것이 좋을 듯 하다.  
+> https://www.algolia.com/doc/guides/building-search-ui/resources/demos/vue/
+
+데모에서 쓰인 위젯들은 다음 공식 문서에서 확인이 가능하다.
+> https://www.algolia.com/doc/guides/building-search-ui/widgets/showcase/vue/
+
+만약 데이터를 등록했는데 `algolia`에 데이터가 안 올라가면,  
+`index` 콘솔에서 `Search API Logs` 탭을 확인해보면 어떤 문제가 있는지 확인할 수 있다.
+
+### algolia 사용
+현 프로젝트에서는 `posts` 데이터들을 `algolia`에 저장하고, 검색을 할 수 있도록 구성하였다.  
+`postId`는 `algolia`에서 `objectID`로 된다.
+
+`algolia`에서 검색 후 텍스트가 길면, `Configuration - Attributes to retrieve`에서 제거하고 가져올 수 있는데, 
+`-`(마이너스) 키워드를 붙이고 제거하고 싶은 키워드를 입력하면 된다(ex_ `-content`).  
+그러면 해당 키워드는 검색 결과에서 제외된다.
+
+제한된 키워드를 설정하고, 그래도 데이터를 가져오고 싶다면, `Configuration - Snippeting` 설정에서 제한된 글자만큼 가져올 수 있다.  
+이렇게 제한된 스니펫은 객체에 그대로 담겨져 오는 것이 아닌, `_snippetResult`로 담겨져 오게 된다. 내부 프로퍼티는 다음과 같다.
+- `value`: 제한된 글자만큼 가져온 텍스트
+- `matchLevel`: 일치하는 레벨
+- `matchedWords`: 일치하는 단어
+
+타이핑을 통해 검색을 할 때, 모든 항목의 데이터에 대해서 검색하면 비효율적이다.  
+`algolia`에서는 `Configuration - searchableAttributes`를 설정해서 검색할 항목을 설정할 수 있다.  
+예를 들어, 현 `search` 페이지에서는 카테고리에서는 왼쪽 사이드바에서 검색이 가능하니 `title`, `category`만 검색하도록 구성했다.
+
+페이지네이션도 컴포넌트만 추가하면 자동으로 설정이된다.  
+한 번에 가져올 개수는 대시보드에서도 설정이 가능하고 코드에서도 `AisConfigure` 컴포넌트를 이용해서 설정이 가능하다.  
+대시보드에서는 `Configuration - Pagination`에서 설정이 가능하고, 코드에서는 `hitsPerPage.camel`를 설정하면 된다.
+
+### algolia firebase
+`firebase`에서 `algolia` 서드파티를 연동하려면 확장 툴을 깔아야 한다.  
+해당 확장은 공짜로 제공해주지는 않고 최소 결제로 0.01달러부터 시작한다.
+
+처음 확장 설치 후 `algolia`의 인덱스와 `firebase`의 `collection`을 연동하려면,  
+`API Key`를 세팅해주어야 하는데, `algolia`에서 `API key`를 생성 후 연동해주면된다.  
+연동 조건으로는 `firebase`에서는 다음과 같이 언급하고 있다.
+- with “addObject”, “deleteObject”, “listIndexes”, “deleteIndex”, “editSettings”, and “settings” permissions. Do not use the Admin API key.
+
+즉, `firebase`에서는 `Admin API key`를 사용하면 안되고, 언급한 권한을 가진 `API key`를 사용해서 붙여주면 된다.  
+참고로 `algolia`의 무료 플랜은 `10kb`까지 가능하다.
