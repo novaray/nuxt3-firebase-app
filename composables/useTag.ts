@@ -10,8 +10,8 @@ export const useTag = (options: UseTagOptions) => {
   const { tags, updateTags, maxLengthMessage } = options;
   const tagField = ref('');
 
-  const addTag = (searchTag?: string) => {
-    const tagValue = searchTag || tagField.value.replace(/ /g, '');
+  const addTag = (searchTag: string | KeyboardEvent) => {
+    const tagValue = searchTag instanceof KeyboardEvent ? tagField.value.replace(/ /g, '') : searchTag;
     if (!tagValue) {
       return;
     }
