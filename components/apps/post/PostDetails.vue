@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { date } from 'quasar';
-import type { PostData } from '~/types/post';
+import type { PostData, PostUser } from '@/types/post';
 
 const { hasOwnContent } = useAuthStore();
 
 const post = ref<PostData>();
+const postUser = ref<PostUser | null>(null);
 const { getPostDetail, deletePost } = usePost();
 
 const route = useRoute();
@@ -17,6 +18,7 @@ getPostDetail().then((result) => {
   }
 
   post.value = result.post;
+  postUser.value = result.postUser;
   updateLikeCount(result.post.likeCount);
   updateBookmarkCount(result.post.bookmarkCount);
 });
@@ -68,12 +70,12 @@ const onDeletePost = () => {
     <div class="flex items-center">
       <q-avatar>
         <img
-          src="https://cdn.quasar.dev/img/avatar.png"
+          :src="postUser?.photoURL ?? 'https://cdn.quasar.dev/img/avatar.png'"
           alt="user-avatar"
         />
       </q-avatar>
       <div class="q-ml-md">
-        <div>짐코딩</div>
+        <div>{{ postUser?.displayName ?? '닉네임' }}</div>
         <div class="text-grey-6">{{ date.formatDate(post?.createdAt, 'YYYY. MM. DD HH:mm:ss') }}</div>
       </div>
       <q-space />

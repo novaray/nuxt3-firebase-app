@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { PostData } from '@/types/post';
+import type { PostData, PostUser } from '@/types/post';
 import { RelativeTimeFormat } from '@/utils/relativeTimeFormat';
+import { User } from '@/service';
 
 const props = withDefaults(defineProps<PostData>(), {
   readCount: 0,
@@ -26,6 +27,20 @@ const {
 } = useBookmark(props.id, {
   initialCount: props.bookmarkCount
 });
+
+const postUser = ref<PostUser>();
+const getUserById = () => {
+  User.getUserById(props.uid)
+    .then((user) => {
+      if (!user) {
+        return;
+      }
+
+      postUser.value = user;
+    })
+    .catch(useFireStoreError);
+};
+getUserById();
 </script>
 
 <template>
@@ -41,14 +56,16 @@ const {
     >
       <q-avatar>
         <img
-          src="https://cdn.quasar.dev/img/boy-avatar.png"
+          :src="postUser?.photoURL ?? 'https://cdn.quasar.dev/img/boy-avatar.png'"
           alt=""
         />
       </q-avatar>
     </q-item-section>
     <q-item-section>
       <div class="flex items-center">
-        <span>닉네임 &middot;&nbsp;{{ formattedCreatedAt }}</span>
+        <span> {{ postUser?.displayName ?? '닉네임' }} </span>
+        <span class="q-mx-xs">&middot;</span>
+        <span>{{ formattedCreatedAt }}</span>
         <q-chip
           class="q-ml-sm"
           dense

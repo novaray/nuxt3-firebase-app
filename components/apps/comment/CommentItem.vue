@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { date } from 'quasar';
 import type { CommentData } from '@/types/comment';
-defineProps<CommentData>();
+import { User } from '@/service';
+import type { PostUser } from '@/types/post';
+const props = defineProps<CommentData>();
 
 interface Emits {
   (event: 'delete', id: string): void;
@@ -9,6 +11,20 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const { hasOwnContent } = useAuthStore();
+
+const commentUser = ref<PostUser | null>(null);
+const getUser = () => {
+  User.getUserById(props.uid)
+    .then((user) => {
+      if (!user) {
+        return;
+      }
+
+      commentUser.value = user;
+    })
+    .catch(useFireStoreError);
+};
+getUser();
 </script>
 
 <template>
@@ -19,14 +35,14 @@ const { hasOwnContent } = useAuthStore();
     >
       <q-avatar size="md">
         <img
-          src="https://cdn.quasar.dev/img/avatar.png"
+          :src="commentUser?.photoURL ?? 'https://cdn.quasar.dev/img/avatar.png'"
           alt="user-avatar"
         />
       </q-avatar>
     </q-item-section>
     <q-item-section>
       <div class="flex text-caption">
-        <span>짐코딩</span>
+        <span>{{ commentUser?.displayName ?? '닉네임' }}</span>
         <span class="q-mx-xs">&middot;</span>
         <span class="text-grey-6">{{ date.formatDate(createdAt, 'YYYY. MM. DD HH:mm:ss') }}</span>
       </div>

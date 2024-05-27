@@ -1,4 +1,4 @@
-import { Post } from '@/service';
+import { Post, User } from '@/service';
 import type { PostForm } from '@/types/post';
 
 export const usePost = () => {
@@ -12,7 +12,12 @@ export const usePost = () => {
 
   const getPostDetail = () => {
     return Post.getPostDetails(route.params.id as string)
-      .then((data) => data)
+      .then((data) => {
+        return User.getUserById(data.post.uid).then((postUser) => ({
+          post: data.post,
+          postUser
+        }));
+      })
       .catch(useFireStoreError);
   };
 
