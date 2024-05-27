@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['nuxt-quasar-ui', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
+  modules: ['nuxt-quasar-ui', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt', '@nuxtjs/algolia'],
   quasar: {
     plugins: ['Notify'],
     config: {
@@ -12,6 +12,11 @@ export default defineNuxtConfig({
     extras: {
       fontIcons: ['material-symbols-outlined']
     }
+  },
+  algolia: {
+    applicationId: process.env.ALGOLIA_APPLICATION_ID,
+    apiKey: process.env.ALGOLIA_SEARCH_API_KEY,
+    instantSearch: { theme: 'algolia' }
   },
   runtimeConfig: {
     public: {
