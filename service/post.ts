@@ -21,6 +21,7 @@ import {
   increment
 } from '@firebase/firestore';
 import type { CreatePostRequest, PostData, PostForm } from '@/types/post';
+import type { PostTag } from '@/types/tag';
 
 export class Post {
   static createPost(data: CreatePostRequest) {
@@ -199,6 +200,15 @@ export class Post {
     const q = query(collection(db, 'users', uid, 'bookmarks'), orderBy('createdAt', 'desc'), limit(6));
     return getDocs(q).then((querySnapshot) => {
       return Promise.all(querySnapshot.docs.map((docSnap) => this.getPost(docSnap.id)));
+    });
+  }
+
+  static getTags() {
+    const db = getFirestore();
+    const q = query(collection(db, 'tags'), where('count', '>', 0), orderBy('count', 'desc'));
+
+    return getDocs(q).then((querySnapshot) => {
+      return querySnapshot.docs.map((doc) => doc.data() as PostTag);
     });
   }
 }

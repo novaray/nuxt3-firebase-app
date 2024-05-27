@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { Post } from '@/service';
+import type { PostTag } from '@/types/tag';
+
 interface Props {
   tags: string[];
 }
@@ -15,6 +18,18 @@ const { tagField, addTag, removeTag } = useTag({
   updateTags: (tags) => emit('update:tags', tags),
   maxLengthMessage: '태그는 10개까지만 등록할 수 있습니다.'
 });
+
+const postTags = ref<PostTag[]>([]);
+const tagsLoading = ref(false);
+const getTags = () => {
+  tagsLoading.value = true;
+  postTags.value = [];
+  Post.getTags()
+    .then((tags) => (postTags.value = tags))
+    .catch(useFireStoreError)
+    .finally(() => (tagsLoading.value = false));
+};
+getTags();
 </script>
 
 <template>
@@ -55,6 +70,7 @@ const { tagField, addTag, removeTag } = useTag({
           flat
           round
           color="grey"
+          @click="getTags"
         />
       </q-card-section>
       <q-card-section class="q-mb-sm">
@@ -93,20 +109,27 @@ const { tagField, addTag, removeTag } = useTag({
           </div>
         </q-card>
       </q-card-section>
-
+      <div
+        v-if="tagsLoading"
+        class="flex flex-center"
+      >
+        loading...
+      </div>
       <q-list padding>
         <q-item
+          v-for="{ name, count } in postTags"
+          :key="name"
           v-ripple
           clickable
           dense
-          @click="addTag()"
+          @click="addTag(name)"
         >
-          <q-item-section class="text-teal text-caption">#vuejs</q-item-section>
+          <q-item-section class="text-teal text-caption">{{ name }}</q-item-section>
           <q-item-section
             side
             class="text-teal text-caption"
           >
-            10
+            {{ count }}
           </q-item-section>
         </q-item>
       </q-list>
