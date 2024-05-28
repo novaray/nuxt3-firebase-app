@@ -280,3 +280,52 @@ npm install @nuxtjs/algolia
 
 즉, `firebase`에서는 `Admin API key`를 사용하면 안되고, 언급한 권한을 가진 `API key`를 사용해서 붙여주면 된다.  
 참고로 `algolia`의 무료 플랜은 `10kb`까지 가능하다.
+
+## firebase hosting
+Nuxt에서 제공하는 배포 문서는 다음과 같다.  
+> https://nuxt.com/deploy/firebase
+
+해당 프로젝트에서는 `firebase init`을 실행할 때 해당 프론젝트에 `hosting`을 다이렉트로 추가한 것이 아닌,  
+firebase 관련 소스를 따로 `firebase` 폴더에 넣어두었다.
+
+그렇기에 `nuxt.config.ts`에서 `nitro` 설정을 추가로 해주었는데,  
+`preset`, `output`, `firebase`관련 설정을 해두었다.
+
+내가 사용하고 있는 firebase는 2세데 이므로 `gen` 속성도 설정해두었다.
+`region`을 따로 설정 안 하면 기본적으로, `us-central1`로 설정된다.  
+따라서 서울 리전인 `asia-northeast3`로 설정해주었다.
+
+배포할 때는, `functions`와 `hosting`만 배포하도록 다음 스크립트를 실행했다.
+```shell
+firebase deploy --only functions:server,hosting
+```
+
+### firebase hosting 트러블 슈팅
+
+#### build
+nuxt에서 `nuxi build`를 통해 빌드를 진행하면 `.output` 폴더가 생성된다.  
+이것의 폴더 지정을 다음 `document`를 참조하여 설정했는데 정상적으로 output directory가 설정되지 않았다.  
+> https://nuxt.com/docs/api/nuxt-config#builddir
+
+알고보니, `.output`은 `nitro`의 영역이므로 `nitro`에 설정을 해주어야 한다.  
+> https://nitro.unjs.io/config#output
+
+#### hosting
+가장 많이 헤맨 부분은 hosting 과정이었다.  
+얼핏 여러 글들을 찾아본 결과, `.output/server` 폴더에서 `npm install`을 진행하라고 했는데 왜 설치해야되는지 몰랐다.  
+`nuxt build`로 빌드를 진행하면 자동으로 `node_modules`가 생성되었기 때문이다.  
+그러나, 혹시나 싶어서 `node_modules` 폴더를 지우고 `npm install`을 진행한 후, `hosting`을 진행했는데 정상적으로 배포가 되었다.
+
+#### index.html
+두 번째로는 `hosting`은 제대로 됐는데, `firebase`에서 기본적으로 제공하는 `index.html`, `404.html`때문에 웹페이지가 제대로 안 떴다.  
+이것 때문에 실제로 구현한 웹앱의 index페이지가 아닌, firebase에서 제공하는 index페이지가 뜨는 것이었다.  
+그래서 배포가 계속 실패한 줄 알았다.
+
+근데, 혹시나 싶어서 다른 라우트로 접근해보니 제대로 배포가 된 것이었다.  
+그래서 `firebase`에서 제공하는 `index.html` 및 `404.html`을 제거하고, 다시 배포를 진행해보니 정상적으로 index(home) view가 뜨는 것을 확인했다.
+
+## 배포 사이트
+- https://skkim-nuxt3-firebase-app.web.app/
+
+참고) 닫혀 있을 수 있음.
+- **2024/06/01 자로 닫음.**

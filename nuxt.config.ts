@@ -18,6 +18,20 @@ export default defineNuxtConfig({
     apiKey: process.env.ALGOLIA_SEARCH_API_KEY,
     instantSearch: { theme: 'algolia' }
   },
+  buildDir: 'firebase/public',
+  nitro: {
+    preset: 'firebase',
+    output: {
+      dir: 'firebase/.output',
+      serverDir: 'firebase/.output/server',
+      publicDir: 'firebase/.output/public'
+    },
+    firebase: {
+      nodeVersion: '18',
+      gen: 2,
+      httpsOptions: { region: 'asia-northeast3' }
+    }
+  },
   runtimeConfig: {
     public: {
       firebaseApiKey: process.env.FIREBASE_API_KEY,
